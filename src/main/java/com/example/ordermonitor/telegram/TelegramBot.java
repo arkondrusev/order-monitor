@@ -1,6 +1,8 @@
 package com.example.ordermonitor.telegram;
 
+import com.example.ordermonitor.telegram.config.TelegramConfig;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
@@ -8,6 +10,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
+
+    private TelegramConfig telegramConfig;
+
+    public TelegramBot(@Autowired TelegramConfig telegramConfig) {
+        this.telegramConfig = telegramConfig;
+    }
 
     @Override
     public void consume(Update update) {
@@ -21,9 +29,8 @@ public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
     public void init() {
         System.out.println("Initializing TelegramBot");
         try {
-            String botToken = "7133584346:AAEafL7uILp5eIgaTsEagd-b_qvW6PJFvfg";
             TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication();
-            botsApplication.registerBot(botToken, this);
+            botsApplication.registerBot(telegramConfig.getBotToken(), this);
         } catch (Throwable e) {
             System.out.println(e);
         }

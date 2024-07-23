@@ -18,7 +18,7 @@ public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
     private TelegramConfig telegramConfig;
     private TelegramClient telegramClient;
 
-    public TelegramBot(@Autowired TelegramConfig telegramConfig) {
+    public TelegramBot(TelegramConfig telegramConfig) {
         this.telegramConfig = telegramConfig;
         this.telegramClient = new OkHttpTelegramClient(telegramConfig.getBotToken());
     }

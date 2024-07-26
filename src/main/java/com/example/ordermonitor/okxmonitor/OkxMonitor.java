@@ -28,7 +28,7 @@ public class OkxMonitor {
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() {
         String host = "https://www.okx.com";
-        String url = "/api/v5/account/positions";
+        String url = "/api/v5/trade/orders-pending";
         String timestampStr = getUnixTime();
         String strForSign = timestampStr + "GET" + url;
         String headerSign = null;

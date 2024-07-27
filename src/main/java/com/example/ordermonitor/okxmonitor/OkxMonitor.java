@@ -1,6 +1,11 @@
 package com.example.ordermonitor.okxmonitor;
 
+import com.example.ordermonitor.dto.SEActiveOrderReceiptWrapper;
 import com.example.ordermonitor.okxmonitor.config.OkxConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -12,6 +17,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 
 @Component
 public class OkxMonitor {
@@ -28,7 +34,7 @@ public class OkxMonitor {
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() {
         String host = "https://www.okx.com";
-        String url = "/api/v5/trade/orders-pending";
+        String url = "/api/v5/trade/orders-pending" + "?" + "instType=SPOT" + "&" + "ordType=limit";
         String timestampStr = getUnixTime();
         String strForSign = timestampStr + "GET" + url;
         String headerSign = null;
@@ -48,8 +54,18 @@ public class OkxMonitor {
                 .header("OK-ACCESS-SIGN",headerSign)
                 .header("OK-ACCESS-TIMESTAMP", timestampStr)
                 .header("OK-ACCESS-PASSPHRASE", okxConfig.getPassphrase());
-        RestClient.ResponseSpec responseSpec = request.retrieve();
-        System.out.println("response = " + responseSpec.body(String.class));
+        String responseJson = request.retrieve().body(String.class);
+        System.out.println("response = " + responseJson);
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<SEActiveOrderReceiptWrapper> seOrderList = null;
+        try {
+            JsonNode jsonNode = mapper.readTree(responseJson);
+            seOrderList = mapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});
+            System.out.println("seOrderList = " + seOrderList.size());
+        } catch (JsonProcessingException e) {
+            System.out.println(e);
+        }
     }
 
     private static byte[] encodeHmac256(byte[] message, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {

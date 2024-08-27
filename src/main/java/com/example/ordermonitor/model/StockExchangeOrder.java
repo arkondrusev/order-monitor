@@ -29,5 +29,6 @@ public class StockExchangeOrder {
     private ZonedDateTime setTimestamp;
     @Column(name = "execute_timestamp")
     private ZonedDateTime executeTimestamp;
+    private String state;
 
 }

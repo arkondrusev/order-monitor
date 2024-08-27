@@ -1,4 +1,4 @@
-package com.example.ordermonitor.okxmonitor.config;
+package com.example.ordermonitor.stockexch.okx;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +9,7 @@ public class OkxConfig {
     private final String apiKey;
     private final String secretKey;
     private final String passphrase;
+
 
     public OkxConfig(@Value("${okx.api.key}") String apiKey,
                      @Value("${okx.api.secretkey}") String secretKey,

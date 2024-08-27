@@ -1,12 +1,10 @@
-package com.example.ordermonitor.okxmonitor;
+package com.example.ordermonitor.stockexch.okx;
 
 import com.example.ordermonitor.dto.SEActiveOrderReceiptWrapper;
-import com.example.ordermonitor.okxmonitor.config.OkxConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -16,31 +14,31 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
 @Component
-public class OkxMonitor {
+public class OkxClient {
 
-    private final OkxConfig okxConfig;
+    private final String HOST = "https://www.okx.com";
 
     private final RestClient restClient;
+    private final OkxConfig okxConfig;
 
-    public OkxMonitor(OkxConfig okxConfig) {
+    public OkxClient(OkxConfig okxConfig) {
         restClient = RestClient.create();
         this.okxConfig = okxConfig;
     }
 
-    @Scheduled(fixedDelay = 10000)
-    public void scheduleFixedDelayTask() {
-        String host = "https://www.okx.com";
+    public List<SEActiveOrderReceiptWrapper> requestExchangeOrders() {
         String url = "/api/v5/trade/orders-pending" + "?" + "instType=SPOT" + "&" + "ordType=limit";
-        String timestampStr = getUnixTime();
+        String timestampStr = OkxClient.getUnixTime();
         String strForSign = timestampStr + "GET" + url;
         String headerSign = null;
 
         try {
-            byte[] hmacEncoded = encodeHmac256(strForSign.getBytes(StandardCharsets.UTF_8),
+            byte[] hmacEncoded = OkxClient.encodeHmac256(strForSign.getBytes(StandardCharsets.UTF_8),
                     okxConfig.getSecretKey().getBytes(StandardCharsets.UTF_8));
             headerSign = new String(Base64.getEncoder().encode(hmacEncoded));
         } catch (NoSuchAlgorithmException e) {
@@ -49,7 +47,7 @@ public class OkxMonitor {
             System.out.println(e);
         }
         RestClient.RequestHeadersSpec<?> request = restClient.get()
-                .uri(host + url)
+                .uri(HOST + url)
                 .header("OK-ACCESS-KEY",okxConfig.getApiKey())
                 .header("OK-ACCESS-SIGN",headerSign)
                 .header("OK-ACCESS-TIMESTAMP", timestampStr)
@@ -66,6 +64,7 @@ public class OkxMonitor {
         } catch (JsonProcessingException e) {
             System.out.println(e);
         }
+        return seOrderList == null ? new ArrayList<>() : seOrderList;
     }
 
     private static byte[] encodeHmac256(byte[] message, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {

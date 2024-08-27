@@ -26,9 +26,28 @@ public class StockExchangeOrder {
     private BigDecimal quantity;
     private BigDecimal price;
     @Column(name = "set_timestamp")
-    private ZonedDateTime setTimestamp;
+    private ZonedDateTime openTimestamp;
     @Column(name = "execute_timestamp")
     private ZonedDateTime executeTimestamp;
     private String state;
+
+    public StockExchangeOrder() {
+    }
+
+    public StockExchangeOrder(Long id, StockExchange stockExchange, String seOrderId, String type, String instrument,
+                              String tradeSide, BigDecimal quantity, BigDecimal price, ZonedDateTime openTimestamp,
+                              ZonedDateTime executeTimestamp, String state) {
+        this.id = id;
+        this.stockExchange = stockExchange;
+        this.seOrderId = seOrderId;
+        this.type = type;
+        this.instrument = instrument;
+        this.tradeSide = tradeSide;
+        this.quantity = quantity;
+        this.price = price;
+        this.openTimestamp = openTimestamp;
+        this.executeTimestamp = executeTimestamp;
+        this.state = state;
+    }
 
 }

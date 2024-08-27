@@ -1,28 +1,40 @@
 package com.example.ordermonitor.service;
 
 import com.example.ordermonitor.dto.SEActiveOrderReceiptWrapper;
+import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.model.StockExchangeOrder;
 import com.example.ordermonitor.repository.StockExchangeOrderRepository;
+import com.example.ordermonitor.repository.StockExchangeRepository;
 import com.example.ordermonitor.stockexch.okx.OkxClient;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class StockExchangeOrderService {
 
-    private StockExchangeOrderRepository stockExchangeOrderRepository;
+    private final StockExchangeOrderRepository stockExchangeOrderRepository;
+    private final StockExchangeRepository stockExchangeRepository;
 
     private List<StockExchangeOrder> dbOrderList;
-
     private final OkxClient okxClient;
+    private final StockExchange okxExchange;
 
+    private static final Long STOCK_EXCHANGE_OKX_ID = 1L;
     private static final String STATE_LIVE = "live";
 
-    public StockExchangeOrderService(OkxClient okxClient, StockExchangeOrderRepository stockExchangeOrderRepository) {
-        this.okxClient = okxClient;
+    public StockExchangeOrderService(OkxClient okxClient, StockExchangeOrderRepository stockExchangeOrderRepository,
+                                     StockExchangeRepository stockExchangeRepository) {
         this.stockExchangeOrderRepository = stockExchangeOrderRepository;
+        this.stockExchangeRepository = stockExchangeRepository;
+        this.okxClient = okxClient;
+        this.okxExchange = stockExchangeRepository.findById(STOCK_EXCHANGE_OKX_ID).get();
+
         // 1 запрос для коллекции из БД при старте
         dbOrderList = stockExchangeOrderRepository.findByState(STATE_LIVE);
     }
@@ -37,8 +49,6 @@ public class StockExchangeOrderService {
 
         processNewExchOrders(newExchOrderList);
         processFinishedExchOrders(finishedExchOrderList);
-
-
     }
 
     private void findNewAndFinishedOrders(final List<SEActiveOrderReceiptWrapper> exchOrderList,
@@ -63,13 +73,24 @@ public class StockExchangeOrderService {
         if (newExchOrderWrList.isEmpty()) {
             return;
         }
-        List<StockExchangeOrder> newExchOrderList = new ArrayList<>();
         newExchOrderWrList.forEach(e -> {
-            StockExchangeOrder newOrder = new StockExchangeOrder();
-            newExchOrderList.add(newOrder);
-            dbOrderList.add(newOrder);
+            dbOrderList.add(createStockExchangeOrder(e));
+            //send TG message
         });
-        stockExchangeOrderRepository.saveAll(newExchOrderList);
+    }
+
+    public StockExchangeOrder createStockExchangeOrder(SEActiveOrderReceiptWrapper orderWrapper) {
+        StockExchangeOrder newOrder = new StockExchangeOrder(null, okxExchange, orderWrapper.getOrderId(),
+                orderWrapper.getOrderType(), orderWrapper.getInstrument(), orderWrapper.getTradeSide(),
+                new BigDecimal(orderWrapper.getQuantity()), new BigDecimal(orderWrapper.getPrice()),
+                calcZonedDateTime(orderWrapper.getOpenTimestamp()), null, orderWrapper.getState());
+        return stockExchangeOrderRepository.save(newOrder);
+    }
+
+    private ZonedDateTime calcZonedDateTime(String epochSecondsString) {
+        Long openTimestamp = Long.parseLong(epochSecondsString);
+        Instant instantTimestamp = Instant.ofEpochSecond(openTimestamp);
+        return ZonedDateTime.ofInstant(instantTimestamp, ZoneId.of("UTC"));
     }
 
     private void processFinishedExchOrders(final List<StockExchangeOrder> finishedExchOrderList) {

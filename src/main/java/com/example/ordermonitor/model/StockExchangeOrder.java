@@ -28,7 +28,7 @@ public class StockExchangeOrder {
     @Column(name = "set_timestamp")
     private ZonedDateTime openTimestamp;
     @Column(name = "execute_timestamp")
-    private ZonedDateTime executeTimestamp;w
+    private ZonedDateTime executeTimestamp;
     private String state;
 
     public StockExchangeOrder() {

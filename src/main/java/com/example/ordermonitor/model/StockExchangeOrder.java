@@ -28,7 +28,7 @@ public class StockExchangeOrder {
     @Column(name = "set_timestamp")
     private ZonedDateTime openTimestamp;
     @Column(name = "execute_timestamp")
-    private ZonedDateTime executeTimestamp;
+    private ZonedDateTime executeTimestamp;w
     private String state;
 
     public StockExchangeOrder() {
@@ -50,4 +50,7 @@ public class StockExchangeOrder {
         this.state = state;
     }
 
+    public String getSeOrderId() {
+        return seOrderId;
+    }
 }

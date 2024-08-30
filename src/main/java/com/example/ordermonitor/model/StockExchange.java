@@ -15,8 +15,10 @@ public class StockExchange {
     @NonNull
     private String name;
     @NonNull
+    @Column(name = "api_url")
     private String apiUrl;
     @NonNull
+    @Column(name = "order_list_endpoint")
     private String orderListEndpoint;
 
 }

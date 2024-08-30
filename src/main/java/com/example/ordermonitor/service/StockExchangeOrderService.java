@@ -74,8 +74,11 @@ public class StockExchangeOrderService {
             return;
         }
         newExchOrderWrList.forEach(e -> {
-            dbOrderList.add(createStockExchangeOrder(e));
-            //send TG message
+            if (dbOrderList.stream().filter(n -> n.getSeOrderId().equals(e.getOrderId()))
+                    .findFirst().isEmpty()) {
+                dbOrderList.add(createStockExchangeOrder(e));
+                //send TG message
+            }
         });
     }
 

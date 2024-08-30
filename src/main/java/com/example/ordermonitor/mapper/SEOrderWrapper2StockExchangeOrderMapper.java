@@ -18,16 +18,16 @@ public interface SEOrderWrapper2StockExchangeOrderMapper {
 
     @Mapping(target = "id", expression = "java(null)")
     @Mapping(target = "stockExchange", source = "stockExchange")
-    @Mapping(target = "seOrderId", source = "orderId")
-    @Mapping(target = "type", source = "orderType")
-    @Mapping(target = "instrument", source = "instrument")
-    @Mapping(target = "tradeSide", source = "tradeSide")
-    @Mapping(target = "quantity", source = "java(new BigDecimal(orderWrapper.getQuantity()))")
-    @Mapping(target = "price", source = "java(new BigDecimal(orderWrapper.getPrice()))")
-    @Mapping(target = "openTimestamp", source = "java(calcZonedDateTime(openTimestamp))")
-    @Mapping(target = "executeTimestamp", source = "java(null)")
-    @Mapping(target = "state", source = "state")
-    StockExchangeOrder SEOrderWrapper2StockExchangeOrder(SEOrderWrapper request, StockExchange stockExchange);
+    @Mapping(target = "seOrderId", source = "wrapper.orderId")
+    @Mapping(target = "type", source = "wrapper.orderType")
+    @Mapping(target = "instrument", source = "wrapper.instrument")
+    @Mapping(target = "tradeSide", source = "wrapper.tradeSide")
+    @Mapping(target = "quantity", expression = "java(null)")
+    @Mapping(target = "price", expression = "java(null)")
+    @Mapping(target = "openTimestamp", expression = "java(null)")
+    @Mapping(target = "executeTimestamp", expression = "java(null)")
+    @Mapping(target = "state", source = "wrapper.state")
+    StockExchangeOrder SEOrderWrapper2StockExchangeOrder(SEOrderWrapper wrapper, StockExchange stockExchange);
 
     private ZonedDateTime calcZonedDateTime(String epochSecondsString) {
         Long openTimestamp = Long.parseLong(epochSecondsString);

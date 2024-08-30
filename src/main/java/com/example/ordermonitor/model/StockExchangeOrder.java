@@ -1,12 +1,14 @@
 package com.example.ordermonitor.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "se_order")
+@Data
 public class StockExchangeOrder {
 
     @Id
@@ -50,7 +52,4 @@ public class StockExchangeOrder {
         this.state = state;
     }
 
-    public String getSeOrderId() {
-        return seOrderId;
-    }
 }

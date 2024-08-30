@@ -65,25 +65,21 @@ public class StockExchangeOrderService {
                 pFinishedExchOrderList.remove(dbOrderOpt.get());
             } else {
                 newExchOrderList.add(SEOrderWrapper2StockExchangeOrderMapper
-                        .INSTANCE.SEOrderWrapper2StockExchangeOrder(exchOrder));
+                        .INSTANCE.SEOrderWrapper2StockExchangeOrder(exchOrder, okxExchange));
             }
         });
 
         pFinishedExchOrderList.forEach(e->finishedExchOrderList.add(e));
     }
 
-    private void processNewExchOrders(final List<StockExchangeOrder> newExchOrderWrList) {
+    private void processNewExchOrders(final List<StockExchangeOrder> newExchOrderList) {
         // если на бирже есть а в БД нет, то сохранить в БД и послать уведомление в ТГ
-        if (newExchOrderWrList.isEmpty()) {
+        if (newExchOrderList.isEmpty()) {
             return;
         }
-        newExchOrderWrList.forEach(e -> {
-            // compare by exchange order number
-            if (dbOrderList.stream().filter(n -> n.getSeOrderId().equals(e.getOrderId()))
-                    .findFirst().isEmpty()) {
-                dbOrderList.add(createStockExchangeOrder(e));
-                //send TG message
-            }
+        newExchOrderList.forEach(e -> {
+         //   dbOrderList.add(createStockExchangeOrder(e));
+            //send TG message
         });
     }
 
@@ -104,7 +100,8 @@ public class StockExchangeOrderService {
                 orderWrapper.getOrderType(), orderWrapper.getInstrument(), orderWrapper.getTradeSide(),
                 new BigDecimal(orderWrapper.getQuantity()), new BigDecimal(orderWrapper.getPrice()),
                 calcZonedDateTime(orderWrapper.getOpenTimestamp()), null, orderWrapper.getState());
-        return stockExchangeOrderRepository.save(newOrder);
+       // return stockExchangeOrderRepository.save(newOrder);
+        return null;
     }
 
     private ZonedDateTime calcZonedDateTime(String epochSecondsString) {

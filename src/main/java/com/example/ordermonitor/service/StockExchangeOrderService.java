@@ -1,6 +1,7 @@
 package com.example.ordermonitor.service;
 
-import com.example.ordermonitor.dto.SEActiveOrderReceiptWrapper;
+import com.example.ordermonitor.dto.SEOrderWrapper;
+import com.example.ordermonitor.mapper.SEOrderWrapper2StockExchangeOrderMapper;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.model.StockExchangeOrder;
 import com.example.ordermonitor.repository.StockExchangeOrderRepository;
@@ -14,6 +15,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StockExchangeOrderService {
@@ -40,9 +42,9 @@ public class StockExchangeOrderService {
     }
 
     public void checkExchOrders() {
-        List<SEActiveOrderReceiptWrapper> exchOrderList = okxClient.requestExchangeOrders();
+        List<SEOrderWrapper> exchOrderList = okxClient.requestExchangeOrders();
 
-        List<SEActiveOrderReceiptWrapper> newExchOrderList = new ArrayList<>();
+        List<StockExchangeOrder> newExchOrderList = new ArrayList<>();
         List<StockExchangeOrder> finishedExchOrderList = new ArrayList<>();
 
         findNewAndFinishedOrders(exchOrderList, newExchOrderList, finishedExchOrderList);
@@ -51,29 +53,32 @@ public class StockExchangeOrderService {
         processFinishedExchOrders(finishedExchOrderList);
     }
 
-    private void findNewAndFinishedOrders(final List<SEActiveOrderReceiptWrapper> exchOrderList,
-                                         final List<SEActiveOrderReceiptWrapper> newExchOrderList,
+    private void findNewAndFinishedOrders(final List<SEOrderWrapper> exchOrderList,
+                                         final List<StockExchangeOrder> newExchOrderList,
                                          final List<StockExchangeOrder> finishedExchOrderList) {
         final List<StockExchangeOrder> pFinishedExchOrderList = new ArrayList<>(dbOrderList);
-        exchOrderList.forEach(e -> {
-            if (dbOrderList.contains(e)) {
-                pFinishedExchOrderList.remove(e);
+        exchOrderList.forEach(exchOrder -> {
+            // compare by exchange order number
+            Optional<StockExchangeOrder> dbOrderOpt = dbOrderList.stream().filter(dbOrder -> dbOrder.getSeOrderId()
+                    .equals(exchOrder.getOrderId())).findFirst();
+            if (dbOrderOpt.isPresent()) {
+                pFinishedExchOrderList.remove(dbOrderOpt.get());
             } else {
-                newExchOrderList.add(new SEActiveOrderReceiptWrapper(e.getOrderId(),
-                        e.getOrderType(), e.getInstrument(), e.getTradeSide(), e.getQuantity(),
-                        e.getPrice(), e.getOpenTimestamp(), e.getState()));
+                newExchOrderList.add(SEOrderWrapper2StockExchangeOrderMapper
+                        .INSTANCE.SEOrderWrapper2StockExchangeOrder(exchOrder));
             }
         });
 
         pFinishedExchOrderList.forEach(e->finishedExchOrderList.add(e));
     }
 
-    private void processNewExchOrders(final List<SEActiveOrderReceiptWrapper> newExchOrderWrList) {
+    private void processNewExchOrders(final List<StockExchangeOrder> newExchOrderWrList) {
         // если на бирже есть а в БД нет, то сохранить в БД и послать уведомление в ТГ
         if (newExchOrderWrList.isEmpty()) {
             return;
         }
         newExchOrderWrList.forEach(e -> {
+            // compare by exchange order number
             if (dbOrderList.stream().filter(n -> n.getSeOrderId().equals(e.getOrderId()))
                     .findFirst().isEmpty()) {
                 dbOrderList.add(createStockExchangeOrder(e));
@@ -82,7 +87,19 @@ public class StockExchangeOrderService {
         });
     }
 
-    public StockExchangeOrder createStockExchangeOrder(SEActiveOrderReceiptWrapper orderWrapper) {
+    private void processFinishedExchOrders(final List<StockExchangeOrder> finishedExchOrderList) {
+        // если в БД есть а на бирже нет, то запросить по дельте статус и обновить статусы в БД,
+        // после чего послать уведомление в ТГ
+        if (finishedExchOrderList.isEmpty()) {
+            return;
+        }
+        finishedExchOrderList.forEach(e -> {
+
+            // send TG message
+        });
+    }
+
+    private StockExchangeOrder createStockExchangeOrder(SEOrderWrapper orderWrapper) {
         StockExchangeOrder newOrder = new StockExchangeOrder(null, okxExchange, orderWrapper.getOrderId(),
                 orderWrapper.getOrderType(), orderWrapper.getInstrument(), orderWrapper.getTradeSide(),
                 new BigDecimal(orderWrapper.getQuantity()), new BigDecimal(orderWrapper.getPrice()),
@@ -94,11 +111,6 @@ public class StockExchangeOrderService {
         Long openTimestamp = Long.parseLong(epochSecondsString);
         Instant instantTimestamp = Instant.ofEpochSecond(openTimestamp);
         return ZonedDateTime.ofInstant(instantTimestamp, ZoneId.of("UTC"));
-    }
-
-    private void processFinishedExchOrders(final List<StockExchangeOrder> finishedExchOrderList) {
-        // если в БД есть а на бирже нет, то запросить по дельте статус и обновить статусы в БД,
-        // после чего послать уведомление в ТГ
     }
 
 }

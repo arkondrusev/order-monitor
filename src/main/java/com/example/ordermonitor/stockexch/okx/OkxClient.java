@@ -1,6 +1,6 @@
 package com.example.ordermonitor.stockexch.okx;
 
-import com.example.ordermonitor.dto.SEActiveOrderReceiptWrapper;
+import com.example.ordermonitor.dto.SEOrderWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,7 +31,7 @@ public class OkxClient {
         this.okxConfig = okxConfig;
     }
 
-    public List<SEActiveOrderReceiptWrapper> requestExchangeOrders() {
+    public List<SEOrderWrapper> requestExchangeOrders() {
         String url = "/api/v5/trade/orders-pending" + "?" + "instType=SPOT" + "&" + "ordType=limit";
         String timestampStr = OkxClient.getUnixTime();
         String strForSign = timestampStr + "GET" + url;
@@ -56,7 +56,7 @@ public class OkxClient {
         System.out.println("response = " + responseJson);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<SEActiveOrderReceiptWrapper> seOrderList = null;
+        List<SEOrderWrapper> seOrderList = null;
         try {
             JsonNode jsonNode = mapper.readTree(responseJson);
             seOrderList = mapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});

@@ -2,7 +2,6 @@ package com.example.ordermonitor.telegram;
 
 import com.example.ordermonitor.telegram.config.TelegramConfig;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;

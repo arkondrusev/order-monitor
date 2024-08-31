@@ -21,6 +21,7 @@ public abstract class SEOrderWrapper2StockExchangeOrderMapper {
         StockExchangeOrder stockExchangeOrder = new StockExchangeOrder();
         stockExchangeOrder.setId(null);
         stockExchangeOrder.setStockExchange(stockExchange);
+        stockExchangeOrder.setSeOrderId(wrapper.getOrderId());
         stockExchangeOrder.setType(wrapper.getOrderType());
         stockExchangeOrder.setInstrument(wrapper.getInstrument());
         stockExchangeOrder.setTradeSide(wrapper.getTradeSide());

@@ -3,11 +3,13 @@ package com.example.ordermonitor.service;
 import com.example.ordermonitor.dto.SEOrderWrapper;
 import com.example.ordermonitor.mapper.SEOrderWrapper2StockExchangeOrderMapper;
 import com.example.ordermonitor.model.StockExchange;
+import com.example.ordermonitor.model.StockExchangeApiAccount;
 import com.example.ordermonitor.model.StockExchangeOrder;
 import com.example.ordermonitor.repository.StockExchangeOrderRepository;
 import com.example.ordermonitor.repository.StockExchangeRepository;
 import com.example.ordermonitor.stockexch.okx.OkxClient;
 import com.example.ordermonitor.telegram.TelegramBot;
+import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -43,6 +45,14 @@ public class StockExchangeOrderService {
 
         // 1 запрос для коллекции из БД при старте
         dbOrderList = stockExchangeOrderRepository.findAllByState(STATE_LIVE);
+    }
+
+    public List<StockExchangeOrder> getStockExchangeOrderList(@Nullable StockExchangeApiAccount apiAccount) {
+        if (apiAccount == null) {
+            return stockExchangeOrderRepository.findAll();
+        } else {
+            return stockExchangeOrderRepository.findAllByStockExchangeApiAccount(apiAccount);
+        }
     }
 
     public void checkExchOrders() {

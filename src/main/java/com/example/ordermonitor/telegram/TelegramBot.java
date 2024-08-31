@@ -14,11 +14,11 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 @Component
 public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
 
-    private TelegramConfig telegramConfig;
+    private TelegramConfig config;
     private TelegramClient telegramClient;
 
     public TelegramBot(TelegramConfig telegramConfig) {
-        this.telegramConfig = telegramConfig;
+        this.config = telegramConfig;
         this.telegramClient = new OkHttpTelegramClient(telegramConfig.getBotToken());
     }
 
@@ -28,15 +28,16 @@ public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
         if (update.hasMessage() && update.getMessage().hasText()) {
             System.out.println(update.getMessage().getText());
 
-            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(),
-                    "Received text: " + update.getMessage().getText());
-
             try {
-                telegramClient.execute(sendMessage);
+                sendMessage(update.getMessage().getChatId().toString(), "Received text: " + update.getMessage().getText());
             } catch (TelegramApiException e) {
                 System.out.println(e);
             }
         }
+    }
+
+    public void sendMessage(String chatId, String text) throws TelegramApiException {
+        telegramClient.execute(new SendMessage(chatId, text));
     }
 
     @PostConstruct
@@ -44,7 +45,7 @@ public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
         System.out.println("Initializing TelegramBot");
         try {
             TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication();
-            botsApplication.registerBot(telegramConfig.getBotToken(), this);
+            botsApplication.registerBot(config.getBotToken(), this);
         } catch (Throwable e) {
             System.out.println(e);
         }

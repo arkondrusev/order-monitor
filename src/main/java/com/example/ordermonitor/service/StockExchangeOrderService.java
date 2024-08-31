@@ -9,10 +9,6 @@ import com.example.ordermonitor.repository.StockExchangeRepository;
 import com.example.ordermonitor.stockexch.okx.OkxClient;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +38,7 @@ public class StockExchangeOrderService {
     }
 
     public void checkExchOrders() {
-        List<SEOrderWrapper> exchOrderList = okxClient.requestExchangeOrders();
+        List<SEOrderWrapper> exchOrderList = okxClient.requestOrderList();
 
         List<StockExchangeOrder> newExchOrderList = new ArrayList<>();
         List<StockExchangeOrder> finishedExchOrderList = new ArrayList<>();
@@ -74,11 +70,8 @@ public class StockExchangeOrderService {
 
     private void processNewExchOrders(final List<StockExchangeOrder> newExchOrderList) {
         // если на бирже есть а в БД нет, то сохранить в БД и послать уведомление в ТГ
-        if (newExchOrderList.isEmpty()) {
-            return;
-        }
         newExchOrderList.forEach(e -> {
-         //   dbOrderList.add(createStockExchangeOrder(e));
+            dbOrderList.add(stockExchangeOrderRepository.save(e));
             //send TG message
         });
     }
@@ -86,28 +79,10 @@ public class StockExchangeOrderService {
     private void processFinishedExchOrders(final List<StockExchangeOrder> finishedExchOrderList) {
         // если в БД есть а на бирже нет, то запросить по дельте статус и обновить статусы в БД,
         // после чего послать уведомление в ТГ
-        if (finishedExchOrderList.isEmpty()) {
-            return;
-        }
         finishedExchOrderList.forEach(e -> {
 
             // send TG message
         });
-    }
-
-    private StockExchangeOrder createStockExchangeOrder(SEOrderWrapper orderWrapper) {
-        StockExchangeOrder newOrder = new StockExchangeOrder(null, okxExchange, orderWrapper.getOrderId(),
-                orderWrapper.getOrderType(), orderWrapper.getInstrument(), orderWrapper.getTradeSide(),
-                new BigDecimal(orderWrapper.getQuantity()), new BigDecimal(orderWrapper.getPrice()),
-                calcZonedDateTime(orderWrapper.getOpenTimestamp()), null, orderWrapper.getState());
-       // return stockExchangeOrderRepository.save(newOrder);
-        return null;
-    }
-
-    private ZonedDateTime calcZonedDateTime(String epochSecondsString) {
-        Long openTimestamp = Long.parseLong(epochSecondsString);
-        Instant instantTimestamp = Instant.ofEpochSecond(openTimestamp);
-        return ZonedDateTime.ofInstant(instantTimestamp, ZoneId.of("UTC"));
     }
 
 }

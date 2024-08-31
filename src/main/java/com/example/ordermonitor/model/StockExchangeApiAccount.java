@@ -22,5 +22,8 @@ public class StockExchangeApiAccount {
     @ManyToOne
     @JoinColumn(name = "se_id")
     private StockExchange stockExchange;
+    @NonNull
+    @Column(name = "tg_username")
+    private String telegramUsername;
 
 }

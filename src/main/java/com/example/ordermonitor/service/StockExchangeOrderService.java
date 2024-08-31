@@ -60,8 +60,10 @@ public class StockExchangeOrderService {
             if (dbOrderOpt.isPresent()) {
                 pFinishedExchOrderList.remove(dbOrderOpt.get());
             } else {
-                newExchOrderList.add(SEOrderWrapper2StockExchangeOrderMapper
-                        .INSTANCE.SEOrderWrapper2StockExchangeOrder(exchOrder, okxExchange));
+                StockExchangeOrder order = SEOrderWrapper2StockExchangeOrderMapper
+                        .INSTANCE.SEOrderWrapper2StockExchangeOrder(exchOrder, okxExchange);
+                order.setExecuteTimestamp(null);
+                newExchOrderList.add(order);
             }
         });
 
@@ -80,9 +82,19 @@ public class StockExchangeOrderService {
         // если в БД есть а на бирже нет, то запросить по дельте статус и обновить статусы в БД,
         // после чего послать уведомление в ТГ
         finishedExchOrderList.forEach(e -> {
-
-            // send TG message
+            requestAndUpdateOrder(e);
+            dbOrderList.remove(e);
+            //send TG message
         });
+    }
+
+    private void requestAndUpdateOrder(StockExchangeOrder order) {
+        SEOrderWrapper wrapper = okxClient.requestOrderDetails(order.getInstrument(), order.getSeOrderId());
+        StockExchangeOrder exchOrder = SEOrderWrapper2StockExchangeOrderMapper
+                .INSTANCE.SEOrderWrapper2StockExchangeOrder(wrapper, okxExchange);
+        order.setExecuteTimestamp(exchOrder.getExecuteTimestamp());
+        order.setState(exchOrder.getState());
+        stockExchangeOrderRepository.save(order);
     }
 
 }

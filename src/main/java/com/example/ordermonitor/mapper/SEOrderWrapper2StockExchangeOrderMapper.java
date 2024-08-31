@@ -28,7 +28,7 @@ public abstract class SEOrderWrapper2StockExchangeOrderMapper {
         stockExchangeOrder.setQuantity(new BigDecimal(wrapper.getQuantity()));
         stockExchangeOrder.setPrice(new BigDecimal(wrapper.getPrice()));
         stockExchangeOrder.setOpenTimestamp(calcZonedDateTime(wrapper.getOpenTimestamp()));
-        stockExchangeOrder.setExecuteTimestamp(null);
+        stockExchangeOrder.setExecuteTimestamp(calcZonedDateTime(wrapper.getCloseTimestamp()));
         stockExchangeOrder.setState(wrapper.getState());
         return stockExchangeOrder;
     }

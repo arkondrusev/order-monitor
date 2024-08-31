@@ -16,6 +16,7 @@ public class SEOrderWrapper {
     private final String quantity;
     private final String price;
     private final String openTimestamp;
+    private final String closeTimestamp;
     private final String state;
 
     @JsonCreator
@@ -27,6 +28,7 @@ public class SEOrderWrapper {
             @JsonProperty("sz") String quantity,
             @JsonProperty("px") String price,
             @JsonProperty("cTime") String openTimestamp,
+            @JsonProperty("uTime") String closeTimestamp,
             @JsonProperty("state") String state
     ) {
         this.orderId = orderId;
@@ -36,6 +38,7 @@ public class SEOrderWrapper {
         this.quantity = quantity;
         this.price = price;
         this.openTimestamp = openTimestamp;
+        this.closeTimestamp = closeTimestamp;
         this.state = state;
     }
 

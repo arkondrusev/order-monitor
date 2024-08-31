@@ -68,17 +68,17 @@ public class OkxClient {
         return request.retrieve().body(String.class);
     }
 
-    public SEOrderWrapper requestOrderDetails(String seOrderId) {
-        String url = "/api/v5/trade/order" + "?" + "instId=" + seOrderId;
+    public SEOrderWrapper requestOrderDetails(String instId, String seOrderId) {
+        String url = "/api/v5/trade/order" + "?" + "instId=" + instId + "&" + "ordId=" + seOrderId;
         String responseJson = encodeAndRequest(url);
-        SEOrderWrapper orderWrapper = null;
+        List<SEOrderWrapper> orderWrapperList = null;
         try {
             JsonNode jsonNode = jsonMapper.readTree(responseJson);
-            orderWrapper = jsonMapper.readValue(jsonNode.get("data").toString(), SEOrderWrapper.class);
+            orderWrapperList = jsonMapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});
         } catch (JsonProcessingException e) {
             System.out.println(e);
         }
-        return orderWrapper;
+        return orderWrapperList.get(0);
     }
 
     private static byte[] encodeHmac256(byte[] message, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {

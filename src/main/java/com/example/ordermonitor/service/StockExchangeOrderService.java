@@ -42,7 +42,7 @@ public class StockExchangeOrderService {
         this.okxExchange = stockExchangeRepository.findById(STOCK_EXCHANGE_OKX_ID).get();
 
         // 1 запрос для коллекции из БД при старте
-        dbOrderList = stockExchangeOrderRepository.findByState(STATE_LIVE);
+        dbOrderList = stockExchangeOrderRepository.findAllByState(STATE_LIVE);
     }
 
     public void checkExchOrders() {

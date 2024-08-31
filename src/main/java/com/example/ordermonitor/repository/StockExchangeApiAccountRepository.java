@@ -1,8 +1,15 @@
 package com.example.ordermonitor.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.model.StockExchangeApiAccount;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface StockExchangeApiAccountRepository extends CrudRepository<StockExchangeApiAccount, Long> {
+import java.util.List;
+
+@Repository
+public interface StockExchangeApiAccountRepository extends JpaRepository<StockExchangeApiAccount, Long> {
+
+    List<StockExchangeApiAccount> findAllByStockExchange(StockExchange stockExchange);
 
 }

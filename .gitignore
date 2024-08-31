@@ -31,5 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### properties files ###
 /src/main/resources/telegram-bot.properties
 /src/main/resources/stock-exchange.properties
+/src/main/resources/application.properties

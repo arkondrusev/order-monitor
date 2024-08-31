@@ -78,7 +78,7 @@ public class OkxClient {
         } catch (JsonProcessingException e) {
             System.out.println(e);
         }
-        return orderWrapperList.get(0);
+        return orderWrapperList == null ? null : orderWrapperList.get(0);
     }
 
     private static byte[] encodeHmac256(byte[] message, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {

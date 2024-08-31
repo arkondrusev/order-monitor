@@ -82,8 +82,10 @@ public class StockExchangeOrderService {
         // если в БД есть а на бирже нет, то запросить по дельте статус и обновить статусы в БД,
         // после чего послать уведомление в ТГ
         finishedExchOrderList.forEach(e -> {
-            requestAndUpdateOrder(e);
-            dbOrderList.remove(e);
+            try {
+                requestAndUpdateOrder(e);
+                dbOrderList.remove(e);
+            } catch (Exception ex) {}
             //send TG message
         });
     }

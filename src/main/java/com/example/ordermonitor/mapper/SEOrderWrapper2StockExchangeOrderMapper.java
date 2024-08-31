@@ -35,7 +35,7 @@ public abstract class SEOrderWrapper2StockExchangeOrderMapper {
 
     private static ZonedDateTime calcZonedDateTime(String epochSecondsString) {
         Long openTimestamp = Long.parseLong(epochSecondsString);
-        Instant instantTimestamp = Instant.ofEpochSecond(openTimestamp);
+        Instant instantTimestamp = Instant.ofEpochMilli(openTimestamp);
         return ZonedDateTime.ofInstant(instantTimestamp, ZoneId.of("UTC"));
     }
 

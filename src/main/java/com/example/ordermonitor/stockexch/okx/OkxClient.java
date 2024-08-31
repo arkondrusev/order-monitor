@@ -1,6 +1,7 @@
 package com.example.ordermonitor.stockexch.okx;
 
 import com.example.ordermonitor.dto.SEOrderWrapper;
+import com.example.ordermonitor.stockexch.ExchClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,7 +20,7 @@ import java.util.Base64;
 import java.util.List;
 
 @Component
-public class OkxClient {
+public class OkxClient implements ExchClient {
 
     private final String HOST = "https://www.okx.com";
 

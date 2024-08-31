@@ -3,6 +3,7 @@ package com.example.ordermonitor.service;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.model.StockExchangeApiAccount;
 import com.example.ordermonitor.model.StockExchangeOrder;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +44,15 @@ public class MonitorService {
         stockExchangeApiAccountList.put(se, seApiAccountList);
         seApiAccountList.forEach(acc -> stockExchangeDBOrderList
                 .put(acc, stockExchangeOrderService.getStockExchangeOrderList(acc)));
+    }
+
+    @Scheduled(fixedDelay = 10000)
+    public void scheduleCheckOrders() {
+        checkExchangesOrders();
+    }
+
+    private void checkExchangesOrders() {
+        
     }
 
 }

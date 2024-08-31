@@ -26,19 +26,32 @@ public class OkxClient {
     private final RestClient restClient;
     private final OkxConfig okxConfig;
 
+    private final ObjectMapper jsonMapper = new ObjectMapper();
+
     public OkxClient(OkxConfig okxConfig) {
         restClient = RestClient.create();
         this.okxConfig = okxConfig;
     }
 
-    public List<SEOrderWrapper> requestExchangeOrders() {
+    public List<SEOrderWrapper> requestOrderList() {
         String url = "/api/v5/trade/orders-pending" + "?" + "instType=SPOT" + "&" + "ordType=limit";
-        String timestampStr = OkxClient.getUnixTime();
+        String responseJson = encodeAndRequest(url);
+        List<SEOrderWrapper> seOrderList = null;
+        try {
+            JsonNode jsonNode = jsonMapper.readTree(responseJson);
+            seOrderList = jsonMapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});
+        } catch (JsonProcessingException e) {
+            System.out.println(e);
+        }
+        return seOrderList == null ? new ArrayList<>() : seOrderList;
+    }
+
+    private String encodeAndRequest(String url) {
+        String timestampStr = getUnixTime();
         String strForSign = timestampStr + "GET" + url;
         String headerSign = null;
-
         try {
-            byte[] hmacEncoded = OkxClient.encodeHmac256(strForSign.getBytes(StandardCharsets.UTF_8),
+            byte[] hmacEncoded = encodeHmac256(strForSign.getBytes(StandardCharsets.UTF_8),
                     okxConfig.getSecretKey().getBytes(StandardCharsets.UTF_8));
             headerSign = new String(Base64.getEncoder().encode(hmacEncoded));
         } catch (NoSuchAlgorithmException e) {
@@ -52,19 +65,20 @@ public class OkxClient {
                 .header("OK-ACCESS-SIGN",headerSign)
                 .header("OK-ACCESS-TIMESTAMP", timestampStr)
                 .header("OK-ACCESS-PASSPHRASE", okxConfig.getPassphrase());
-        String responseJson = request.retrieve().body(String.class);
-        System.out.println("response = " + responseJson);
+        return request.retrieve().body(String.class);
+    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<SEOrderWrapper> seOrderList = null;
+    public SEOrderWrapper requestOrderDetails(String seOrderId) {
+        String url = "/api/v5/trade/order" + "?" + "instId=" + seOrderId;
+        String responseJson = encodeAndRequest(url);
+        SEOrderWrapper orderWrapper = null;
         try {
-            JsonNode jsonNode = mapper.readTree(responseJson);
-            seOrderList = mapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});
-            System.out.println("seOrderList = " + seOrderList.size());
+            JsonNode jsonNode = jsonMapper.readTree(responseJson);
+            orderWrapper = jsonMapper.readValue(jsonNode.get("data").toString(), SEOrderWrapper.class);
         } catch (JsonProcessingException e) {
             System.out.println(e);
         }
-        return seOrderList == null ? new ArrayList<>() : seOrderList;
+        return orderWrapper;
     }
 
     private static byte[] encodeHmac256(byte[] message, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {

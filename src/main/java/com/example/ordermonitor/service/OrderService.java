@@ -17,14 +17,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class OrderService implements IRestService {
 
     private final OrderRepository orderRepository;
     private final ApiAccountRepository apiAccountRepository;
 
-    private static final Integer RESPONSE_CODE_OK = 0;
-    private static final Integer RESPONSE_CODE_ERROR = 1;
-    private static final String RESPONSE_MESSAGE_OK = "success";
     private static final String ORDER_STATE_LIVE = "live";
 
     public List<Order> getLiveOrderList(ApiAccount apiAccount) {

@@ -1,6 +1,6 @@
 package com.example.ordermonitor.mapper;
 
-import com.example.ordermonitor.dto.order.RestOrderWrapper;
+import com.example.ordermonitor.dto.order.OrderRestWrapper;
 import com.example.ordermonitor.model.Order;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -22,8 +22,8 @@ public interface Order2RestOrderWrapperMapper {
     @Mapping(target = "openTimestamp", source = "order.openTimestamp")
     @Mapping(target = "closeTimestamp", source = "order.executeTimestamp")
     @Mapping(target = "state", source = "order.state")
-    RestOrderWrapper order2RestOrderWrapper(Order order);
+    OrderRestWrapper order2RestOrderWrapper(Order order);
 
-    List<RestOrderWrapper> order2RestOrderWrapper(List<Order> order);
+    List<OrderRestWrapper> order2RestOrderWrapper(List<Order> order);
 
 }

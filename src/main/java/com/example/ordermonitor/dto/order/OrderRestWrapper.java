@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RestOrderWrapper {
+public class OrderRestWrapper {
 
     private final String orderId;
     private final Long apiAccountId;

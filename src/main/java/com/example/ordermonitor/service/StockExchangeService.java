@@ -1,6 +1,7 @@
 package com.example.ordermonitor.service;
 
 import com.example.ordermonitor.dto.stockexchange.*;
+import com.example.ordermonitor.mapper.StockExchange2DTOMapper;
 import com.example.ordermonitor.mapper.StockExchange2StockExchangeRestWrapperMapper;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.repository.StockExchangeRepository;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class StockExchangeService {
+public class StockExchangeService implements IRestService {
 
     private final StockExchangeRepository stockExchangeRepository;
+
+    private final StockExchange2DTOMapper dtoMapper = StockExchange2DTOMapper.INSTANCE;
 
     public StockExchangeService(StockExchangeRepository stockExchangeRepository) {
         this.stockExchangeRepository = stockExchangeRepository;
@@ -30,20 +33,42 @@ public class StockExchangeService {
     }
 
     public CreateStockExchangeResponse createStockExchange(CreateStockExchangeRequest request) {
-        return null;
+        try {
+            StockExchange newStockExchange = dtoMapper.CreateStockExchangeRequest2StockExchange(request);
+            newStockExchange = saveStockExchange(newStockExchange);
+            return dtoMapper.stockExchange2CreateStockExchangeResponse(newStockExchange,
+                    RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
+        } catch (Exception e) {
+            return new CreateStockExchangeResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
     public GetStockExchangeListResponse getStockExchangeListWrapped() {
-        return new GetStockExchangeListResponse(StockExchange2StockExchangeRestWrapperMapper
-                .INSTANCE.stockExchange2StockExchangeRestWrapper(stockExchangeRepository.findAll()));
+        try {
+            GetStockExchangeListResponse getStockExchangeListResponse =
+                    new GetStockExchangeListResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK,
+                            StockExchange2StockExchangeRestWrapperMapper.INSTANCE
+                                    .stockExchange2StockExchangeRestWrapper(stockExchangeRepository.findAll()));
+            return getStockExchangeListResponse;
+        } catch (Exception e) {
+            return new GetStockExchangeListResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
     public UpdateStockExchangeResponse updateStockExchange(UpdateStockExchangeRequest request) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            return new UpdateStockExchangeResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
     public DeleteStockExchangeResponse deleteStockExchange(DeleteStockExchangeRequest request) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            return new DeleteStockExchangeResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
 }

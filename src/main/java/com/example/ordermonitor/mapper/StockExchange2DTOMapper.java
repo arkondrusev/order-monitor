@@ -1,13 +1,12 @@
 package com.example.ordermonitor.mapper;
 
-import com.example.ordermonitor.dto.stockexchange.CreateStockExchangeRequest;
-import com.example.ordermonitor.dto.stockexchange.CreateStockExchangeResponse;
-import com.example.ordermonitor.dto.stockexchange.UpdateStockExchangeRequest;
-import com.example.ordermonitor.dto.stockexchange.UpdateStockExchangeResponse;
+import com.example.ordermonitor.dto.stockexchange.*;
 import com.example.ordermonitor.model.StockExchange;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
+import java.util.List;
 
 @Mapper(config = OrderMonitorMapperConfig.class)
 public interface StockExchange2DTOMapper {
@@ -37,5 +36,11 @@ public interface StockExchange2DTOMapper {
     UpdateStockExchangeResponse stockExchange2UpdateStockExchangeResponse(StockExchange stockExchange,
                                                                           Integer responseCode,
                                                                           String responseMessage);
+
+    @Mapping(target = "id", source = "stockExchange.id")
+    @Mapping(target = "name", source = "stockExchange.name")
+    StockExchangeRestWrapper stockExchange2StockExchangeRestWrapper(StockExchange stockExchange);
+
+    List<StockExchangeRestWrapper> stockExchange2StockExchangeRestWrapper(List<StockExchange> stockExchanges);
 
 }

@@ -3,7 +3,7 @@ package com.example.ordermonitor.service;
 import com.example.ordermonitor.dto.account.*;
 import com.example.ordermonitor.model.ApiAccount;
 import com.example.ordermonitor.model.StockExchange;
-import com.example.ordermonitor.repository.StockExchangeApiAccountRepository;
+import com.example.ordermonitor.repository.ApiAccountRepository;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -12,26 +12,26 @@ import java.util.List;
 @Service
 public class ApiAccountService {
 
-    private final StockExchangeApiAccountRepository stockExchangeApiAccountRepository;
+    private final ApiAccountRepository apiAccountRepository;
 
-    public ApiAccountService(StockExchangeApiAccountRepository stockExchangeApiAccountRepository) {
-        this.stockExchangeApiAccountRepository = stockExchangeApiAccountRepository;
+    public ApiAccountService(ApiAccountRepository apiAccountRepository) {
+        this.apiAccountRepository = apiAccountRepository;
     }
 
     public List<ApiAccount> getStockExchangeApiAccount(@Nullable StockExchange stockExchange) {
         if (stockExchange == null) {
-            return stockExchangeApiAccountRepository.findAll();
+            return apiAccountRepository.findAll();
         } else {
-            return stockExchangeApiAccountRepository.findAllByStockExchange(stockExchange);
+            return apiAccountRepository.findAllByStockExchange(stockExchange);
         }
     }
 
     public ApiAccount saveStockExchangeApiAccount(ApiAccount stockExchangeApiAccount) {
-        return stockExchangeApiAccountRepository.save(stockExchangeApiAccount);
+        return apiAccountRepository.save(stockExchangeApiAccount);
     }
 
     public void deleteStockExchangeApiAccount(ApiAccount stockExchangeApiAccount) {
-        stockExchangeApiAccountRepository.delete(stockExchangeApiAccount);
+        apiAccountRepository.delete(stockExchangeApiAccount);
     }
 
     public CreateAccountResponse createAccount(CreateAccountRequest request) {

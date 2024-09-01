@@ -1,7 +1,7 @@
 package com.example.ordermonitor.service;
 
-import com.example.ordermonitor.dto.order.OrderWrapper;
-import com.example.ordermonitor.mapper.SEOrderWrapper2StockExchangeOrderMapper;
+import com.example.ordermonitor.dto.order.ExchOrderWrapper;
+import com.example.ordermonitor.mapper.ExchOrderWrapper2OrderMapper;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.model.ApiAccount;
 import com.example.ordermonitor.model.Order;
@@ -73,7 +73,7 @@ public class MonitorService {
 
     private void checkExchangesOrders() {
         stockExchangeList.forEach(se -> stockExchangeApiAccountList.get(se).forEach(acc -> {
-            List<OrderWrapper> exchOrderList = acc.getExchClient().requestOrderList();
+            List<ExchOrderWrapper> exchOrderList = acc.getExchClient().requestOrderList();
             List<Order> newExchOrderList = new ArrayList<>();
             List<Order> finishedExchOrderList = new ArrayList<>();
             findNewAndFinishedOrders(acc, exchOrderList, newExchOrderList, finishedExchOrderList);
@@ -84,7 +84,7 @@ public class MonitorService {
     }
 
     private void findNewAndFinishedOrders(final ApiAccount apiAccount,
-                                        final List<OrderWrapper> exchOrderList,
+                                        final List<ExchOrderWrapper> exchOrderList,
                                         final List<Order> newExchOrderList,
                                         final List<Order> finishedExchOrderList) {
         final List<Order> pFinishedExchOrderList = new ArrayList<>(stockExchangeDBOrderList.get(apiAccount));
@@ -95,8 +95,8 @@ public class MonitorService {
             if (dbOrderOpt.isPresent()) {
                 pFinishedExchOrderList.remove(dbOrderOpt.get());
             } else {
-                Order order = SEOrderWrapper2StockExchangeOrderMapper
-                        .INSTANCE.SEOrderWrapper2StockExchangeOrder(exchOrder, apiAccount);
+                Order order = ExchOrderWrapper2OrderMapper
+                        .INSTANCE.OrderWrapper2Order(exchOrder, apiAccount);
                 order.setExecuteTimestamp(null);
                 newExchOrderList.add(order);
             }
@@ -134,10 +134,10 @@ public class MonitorService {
     }
 
     private void requestAndUpdateOrder(Order order, ApiAccount apiAccount) {
-        OrderWrapper wrapper = apiAccount.getExchClient()// сделать метод запроса в апи аккауне
+        ExchOrderWrapper wrapper = apiAccount.getExchClient()// сделать метод запроса в апи аккауне
                 .requestOrderDetails(order.getInstrument(), order.getSeOrderId());
-        Order exchOrder = SEOrderWrapper2StockExchangeOrderMapper
-                .INSTANCE.SEOrderWrapper2StockExchangeOrder(wrapper, order.getApiAccount());
+        Order exchOrder = ExchOrderWrapper2OrderMapper
+                .INSTANCE.OrderWrapper2Order(wrapper, order.getApiAccount());
         order.setExecuteTimestamp(exchOrder.getExecuteTimestamp());
         order.setState(exchOrder.getState());
         stockExchangeOrderService.save(order);

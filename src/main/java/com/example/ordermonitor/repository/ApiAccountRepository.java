@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface StockExchangeApiAccountRepository extends JpaRepository<ApiAccount, Long> {
+public interface ApiAccountRepository extends JpaRepository<ApiAccount, Long> {
 
     List<ApiAccount> findAllByStockExchange(StockExchange stockExchange);
 

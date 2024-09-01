@@ -12,6 +12,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByState(String state);
 
-    List<Order> findAllByApiAccount(ApiAccount stockExchangeApiAccount);
+    List<Order> findAllByApiAccount(ApiAccount apiAccount);
 
 }

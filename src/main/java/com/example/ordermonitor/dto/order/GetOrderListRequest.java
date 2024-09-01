@@ -11,9 +11,10 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 public class GetOrderListRequest {
 
+    private Long apiAccountId;
     private String instId;
     private String state;
-    private ZonedDateTime activeBegin ;
+    private ZonedDateTime activeBegin;
     private ZonedDateTime activeEnd;
 
 }

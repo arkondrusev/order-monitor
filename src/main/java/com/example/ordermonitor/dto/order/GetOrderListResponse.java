@@ -13,6 +13,6 @@ public class GetOrderListResponse {
 
     private Integer responseCode;
     private String responseMessage;
-    private List<OrderWrapper> orderList;
+    private List<RestOrderWrapper> orderList;
 
 }

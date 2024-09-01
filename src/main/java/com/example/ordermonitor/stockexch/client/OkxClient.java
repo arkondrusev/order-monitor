@@ -1,6 +1,6 @@
 package com.example.ordermonitor.stockexch.client;
 
-import com.example.ordermonitor.dto.order.OrderWrapper;
+import com.example.ordermonitor.dto.order.ExchOrderWrapper;
 import com.example.ordermonitor.stockexch.ExchConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -29,10 +29,10 @@ public class OkxClient extends AbstractExchClient implements ExchClient {
         restClient = RestClient.create();
     }
 
-    public List<OrderWrapper> requestOrderList() {
+    public List<ExchOrderWrapper> requestOrderList() {
         String url = "/api/v5/trade/orders-pending" + "?" + "instType=SPOT" + "&" + "ordType=limit";
         String responseJson = encodeAndRequest(url);
-        List<OrderWrapper> seOrderList = null;
+        List<ExchOrderWrapper> seOrderList = null;
         try {
             JsonNode jsonNode = jsonMapper.readTree(responseJson);
             seOrderList = jsonMapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});
@@ -64,17 +64,17 @@ public class OkxClient extends AbstractExchClient implements ExchClient {
         return request.retrieve().body(String.class);
     }
 
-    public OrderWrapper requestOrderDetails(String instId, String seOrderId) {
+    public ExchOrderWrapper requestOrderDetails(String instId, String seOrderId) {
         String url = "/api/v5/trade/order" + "?" + "instId=" + instId + "&" + "ordId=" + seOrderId;
         String responseJson = encodeAndRequest(url);
-        List<OrderWrapper> orderWrapperList = null;
+        List<ExchOrderWrapper> exchOrderWrapperList = null;
         try {
             JsonNode jsonNode = jsonMapper.readTree(responseJson);
-            orderWrapperList = jsonMapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});
+            exchOrderWrapperList = jsonMapper.readValue(jsonNode.get("data").toString(), new TypeReference<>(){});
         } catch (JsonProcessingException e) {
             System.out.println(e);
         }
-        return orderWrapperList == null ? null : orderWrapperList.get(0);
+        return exchOrderWrapperList == null ? null : exchOrderWrapperList.get(0);
     }
 
     private static byte[] encodeHmac256(byte[] message, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {

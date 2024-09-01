@@ -1,12 +1,10 @@
-package com.example.ordermonitor.stockexch.okx;
+package com.example.ordermonitor.stockexch.client;
 
 import com.example.ordermonitor.dto.SEOrderWrapper;
-import com.example.ordermonitor.stockexch.ExchClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import javax.crypto.Mac;
@@ -19,19 +17,14 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-@Component
-public class OkxClient implements ExchClient {
+public class OkxClient extends AbstractExchClient implements ExchClient {
 
     private final String HOST = "https://www.okx.com";
 
-    private final RestClient restClient;
-    private final OkxConfig okxConfig;
-
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public OkxClient(OkxConfig okxConfig) {
+    public OkxClient() {
         restClient = RestClient.create();
-        this.okxConfig = okxConfig;
     }
 
     public List<SEOrderWrapper> requestOrderList() {
@@ -53,7 +46,7 @@ public class OkxClient implements ExchClient {
         String headerSign = null;
         try {
             byte[] hmacEncoded = encodeHmac256(strForSign.getBytes(StandardCharsets.UTF_8),
-                    okxConfig.getSecretKey().getBytes(StandardCharsets.UTF_8));
+                    config.getSecretKey().getBytes(StandardCharsets.UTF_8));
             headerSign = new String(Base64.getEncoder().encode(hmacEncoded));
         } catch (NoSuchAlgorithmException e) {
             System.out.println(e);
@@ -62,10 +55,10 @@ public class OkxClient implements ExchClient {
         }
         RestClient.RequestHeadersSpec<?> request = restClient.get()
                 .uri(HOST + url)
-                .header("OK-ACCESS-KEY",okxConfig.getApiKey())
+                .header("OK-ACCESS-KEY",config.getApiKey())
                 .header("OK-ACCESS-SIGN",headerSign)
                 .header("OK-ACCESS-TIMESTAMP", timestampStr)
-                .header("OK-ACCESS-PASSPHRASE", okxConfig.getPassphrase());
+                .header("OK-ACCESS-PASSPHRASE", config.getPassphrase());
         return request.retrieve().body(String.class);
     }
 

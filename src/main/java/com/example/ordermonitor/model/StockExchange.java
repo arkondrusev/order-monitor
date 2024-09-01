@@ -1,7 +1,7 @@
 package com.example.ordermonitor.model;
 
-import com.example.ordermonitor.stockexch.ExchClient;
-import com.example.ordermonitor.stockexch.okx.OkxClient;
+import com.example.ordermonitor.stockexch.client.ExchClient;
+import com.example.ordermonitor.stockexch.client.OkxClient;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,20 +21,14 @@ public class StockExchange {
     private Long id;
     @NonNull
     private String name;
-    @NonNull
-    @Column(name = "api_url")
-    private String apiUrl;
-    @NonNull
-    @Column(name = "order_list_endpoint")
-    private String orderListEndpoint;
     @Transient
     private ExchClient exchClient;
 
     @PostConstruct
-    private void postConstruct(OkxClient okxClient) {
+    private void postConstruct() {
         // rework later for flexible initialization
         if (id == 1) {
-            exchClient = okxClient;
+            exchClient = new OkxClient();
         }
     }
 

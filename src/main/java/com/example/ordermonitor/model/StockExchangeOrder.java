@@ -17,8 +17,8 @@ public class StockExchangeOrder {
     @Column(name = "id", updatable=false)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "se_id")
-    private StockExchange stockExchange;
+    @JoinColumn(name = "se_api_account_id")
+    private StockExchangeApiAccount stockExchangeApiAccount;
     @Column(name = "se_order_id")
     private String seOrderId;
     private String type;
@@ -36,11 +36,11 @@ public class StockExchangeOrder {
     public StockExchangeOrder() {
     }
 
-    public StockExchangeOrder(Long id, StockExchange stockExchange, String seOrderId, String type, String instrument,
-                              String tradeSide, BigDecimal quantity, BigDecimal price, ZonedDateTime openTimestamp,
-                              ZonedDateTime executeTimestamp, String state) {
+    public StockExchangeOrder(Long id, StockExchangeApiAccount apiAccount, String seOrderId, String type,
+                              String instrument, String tradeSide, BigDecimal quantity, BigDecimal price,
+                              ZonedDateTime openTimestamp, ZonedDateTime executeTimestamp, String state) {
         this.id = id;
-        this.stockExchange = stockExchange;
+        this.stockExchangeApiAccount = apiAccount;
         this.seOrderId = seOrderId;
         this.type = type;
         this.instrument = instrument;

@@ -1,8 +1,8 @@
 package com.example.ordermonitor.mapper;
 
-import com.example.ordermonitor.dto.SEOrderWrapper;
-import com.example.ordermonitor.model.StockExchangeApiAccount;
-import com.example.ordermonitor.model.StockExchangeOrder;
+import com.example.ordermonitor.dto.OrderWrapper;
+import com.example.ordermonitor.model.ApiAccount;
+import com.example.ordermonitor.model.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -17,9 +17,9 @@ public abstract class SEOrderWrapper2StockExchangeOrderMapper {
     public static SEOrderWrapper2StockExchangeOrderMapper INSTANCE = Mappers
             .getMapper(SEOrderWrapper2StockExchangeOrderMapper.class);
 
-    public StockExchangeOrder SEOrderWrapper2StockExchangeOrder(SEOrderWrapper wrapper,
-                                                                StockExchangeApiAccount apiAccount) {
-        StockExchangeOrder stockExchangeOrder = new StockExchangeOrder();
+    public Order SEOrderWrapper2StockExchangeOrder(OrderWrapper wrapper,
+                                                   ApiAccount apiAccount) {
+        Order stockExchangeOrder = new Order();
         stockExchangeOrder.setId(null);
         stockExchangeOrder.setStockExchangeApiAccount(apiAccount);
         stockExchangeOrder.setSeOrderId(wrapper.getOrderId());

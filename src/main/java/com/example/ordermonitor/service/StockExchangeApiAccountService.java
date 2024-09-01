@@ -1,7 +1,7 @@
 package com.example.ordermonitor.service;
 
 import com.example.ordermonitor.model.StockExchange;
-import com.example.ordermonitor.model.StockExchangeApiAccount;
+import com.example.ordermonitor.model.ApiAccount;
 import com.example.ordermonitor.repository.StockExchangeApiAccountRepository;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class StockExchangeApiAccountService {
         this.stockExchangeApiAccountRepository = stockExchangeApiAccountRepository;
     }
 
-    public List<StockExchangeApiAccount> getStockExchangeApiAccount(@Nullable StockExchange stockExchange) {
+    public List<ApiAccount> getStockExchangeApiAccount(@Nullable StockExchange stockExchange) {
         if (stockExchange == null) {
             return stockExchangeApiAccountRepository.findAll();
         } else {
@@ -25,11 +25,11 @@ public class StockExchangeApiAccountService {
         }
     }
 
-    public StockExchangeApiAccount saveStockExchangeApiAccount(StockExchangeApiAccount stockExchangeApiAccount) {
+    public ApiAccount saveStockExchangeApiAccount(ApiAccount stockExchangeApiAccount) {
         return stockExchangeApiAccountRepository.save(stockExchangeApiAccount);
     }
 
-    public void deleteStockExchangeApiAccount(StockExchangeApiAccount stockExchangeApiAccount) {
+    public void deleteStockExchangeApiAccount(ApiAccount stockExchangeApiAccount) {
         stockExchangeApiAccountRepository.delete(stockExchangeApiAccount);
     }
 

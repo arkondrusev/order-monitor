@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "se_order")
 @Data
-public class StockExchangeOrder {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="se_order_id_seq")
@@ -18,7 +18,7 @@ public class StockExchangeOrder {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "se_api_account_id")
-    private StockExchangeApiAccount stockExchangeApiAccount;
+    private ApiAccount stockExchangeApiAccount;
     @Column(name = "se_order_id")
     private String seOrderId;
     private String type;
@@ -33,12 +33,12 @@ public class StockExchangeOrder {
     private ZonedDateTime executeTimestamp;
     private String state;
 
-    public StockExchangeOrder() {
+    public Order() {
     }
 
-    public StockExchangeOrder(Long id, StockExchangeApiAccount apiAccount, String seOrderId, String type,
-                              String instrument, String tradeSide, BigDecimal quantity, BigDecimal price,
-                              ZonedDateTime openTimestamp, ZonedDateTime executeTimestamp, String state) {
+    public Order(Long id, ApiAccount apiAccount, String seOrderId, String type,
+                 String instrument, String tradeSide, BigDecimal quantity, BigDecimal price,
+                 ZonedDateTime openTimestamp, ZonedDateTime executeTimestamp, String state) {
         this.id = id;
         this.stockExchangeApiAccount = apiAccount;
         this.seOrderId = seOrderId;

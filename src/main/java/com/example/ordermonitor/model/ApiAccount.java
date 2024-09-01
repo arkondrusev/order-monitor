@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Data
 @NoArgsConstructor
 @Configurable(preConstruction = true)
-public class StockExchangeApiAccount {
+public class ApiAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="se_api_account_id_seq")

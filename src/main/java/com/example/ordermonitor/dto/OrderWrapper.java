@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SEOrderWrapper {
+public class OrderWrapper {
 
     private final String orderId;
     private final String orderType;
@@ -20,7 +20,7 @@ public class SEOrderWrapper {
     private final String state;
 
     @JsonCreator
-    public SEOrderWrapper(
+    public OrderWrapper(
             @JsonProperty("ordId") String orderId,
             @JsonProperty("ordType") String orderType,
             @JsonProperty("instId") String instrument,

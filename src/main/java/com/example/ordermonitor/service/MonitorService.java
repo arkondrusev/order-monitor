@@ -1,10 +1,10 @@
 package com.example.ordermonitor.service;
 
-import com.example.ordermonitor.dto.SEOrderWrapper;
+import com.example.ordermonitor.dto.OrderWrapper;
 import com.example.ordermonitor.mapper.SEOrderWrapper2StockExchangeOrderMapper;
 import com.example.ordermonitor.model.StockExchange;
-import com.example.ordermonitor.model.StockExchangeApiAccount;
-import com.example.ordermonitor.model.StockExchangeOrder;
+import com.example.ordermonitor.model.ApiAccount;
+import com.example.ordermonitor.model.Order;
 import com.example.ordermonitor.stockexch.ExchConfig;
 import com.example.ordermonitor.stockexch.client.OkxClient;
 import com.example.ordermonitor.telegram.TelegramBot;
@@ -20,17 +20,17 @@ public class MonitorService {
 
     private final StockExchangeService stockExchangeService;
     private final StockExchangeApiAccountService stockExchangeApiAccountService;
-    private final StockExchangeOrderService stockExchangeOrderService;
+    private final OrderService stockExchangeOrderService;
     private final TelegramBot telegramBot;
     private final Environment env;
 
     private final List<StockExchange> stockExchangeList = new ArrayList<>();
-    private final Map<StockExchange, List<StockExchangeApiAccount>> stockExchangeApiAccountList = new HashMap<>();
-    private final Map<StockExchangeApiAccount, List<StockExchangeOrder>> stockExchangeDBOrderList = new HashMap<>();
+    private final Map<StockExchange, List<ApiAccount>> stockExchangeApiAccountList = new HashMap<>();
+    private final Map<ApiAccount, List<Order>> stockExchangeDBOrderList = new HashMap<>();
 
     public MonitorService(StockExchangeService stockExchangeService,
                           StockExchangeApiAccountService stockExchangeApiAccountService,
-                          StockExchangeOrderService stockExchangeOrderService,
+                          OrderService stockExchangeOrderService,
                           TelegramBot telegramBot,
                           Environment env) {
         this.stockExchangeService = stockExchangeService;
@@ -50,7 +50,7 @@ public class MonitorService {
     }
 
     private void initStockExchangeData(StockExchange se) {
-        List<StockExchangeApiAccount> seApiAccountList = stockExchangeApiAccountService.getStockExchangeApiAccount(se);
+        List<ApiAccount> seApiAccountList = stockExchangeApiAccountService.getStockExchangeApiAccount(se);
         stockExchangeApiAccountList.put(se, seApiAccountList);
         seApiAccountList.forEach(acc -> {
             // load api config
@@ -62,7 +62,7 @@ public class MonitorService {
                 String passphrase = env.getProperty(propSubstr + ".passphrase");
                 acc.setExchClient(new OkxClient(new ExchConfig(apiKey, secretKey, passphrase)));
             }
-            stockExchangeDBOrderList.put(acc, stockExchangeOrderService.getLiveStockExchangeOrderList(acc));
+            stockExchangeDBOrderList.put(acc, stockExchangeOrderService.getLiveOrderList(acc));
         });
     }
 
@@ -73,9 +73,9 @@ public class MonitorService {
 
     private void checkExchangesOrders() {
         stockExchangeList.forEach(se -> stockExchangeApiAccountList.get(se).forEach(acc -> {
-            List<SEOrderWrapper> exchOrderList = acc.getExchClient().requestOrderList();
-            List<StockExchangeOrder> newExchOrderList = new ArrayList<>();
-            List<StockExchangeOrder> finishedExchOrderList = new ArrayList<>();
+            List<OrderWrapper> exchOrderList = acc.getExchClient().requestOrderList();
+            List<Order> newExchOrderList = new ArrayList<>();
+            List<Order> finishedExchOrderList = new ArrayList<>();
             findNewAndFinishedOrders(acc, exchOrderList, newExchOrderList, finishedExchOrderList);
 
             processNewExchOrders(acc, newExchOrderList);
@@ -83,19 +83,19 @@ public class MonitorService {
         }));
     }
 
-    private void findNewAndFinishedOrders(final StockExchangeApiAccount apiAccount,
-                                        final List<SEOrderWrapper> exchOrderList,
-                                        final List<StockExchangeOrder> newExchOrderList,
-                                        final List<StockExchangeOrder> finishedExchOrderList) {
-        final List<StockExchangeOrder> pFinishedExchOrderList = new ArrayList<>(stockExchangeDBOrderList.get(apiAccount));
+    private void findNewAndFinishedOrders(final ApiAccount apiAccount,
+                                        final List<OrderWrapper> exchOrderList,
+                                        final List<Order> newExchOrderList,
+                                        final List<Order> finishedExchOrderList) {
+        final List<Order> pFinishedExchOrderList = new ArrayList<>(stockExchangeDBOrderList.get(apiAccount));
         exchOrderList.forEach(exchOrder -> {
             // compare by exchange order number
-            Optional<StockExchangeOrder> dbOrderOpt = pFinishedExchOrderList.stream()
+            Optional<Order> dbOrderOpt = pFinishedExchOrderList.stream()
                     .filter(dbOrder -> dbOrder.getSeOrderId().equals(exchOrder.getOrderId())).findFirst();
             if (dbOrderOpt.isPresent()) {
                 pFinishedExchOrderList.remove(dbOrderOpt.get());
             } else {
-                StockExchangeOrder order = SEOrderWrapper2StockExchangeOrderMapper
+                Order order = SEOrderWrapper2StockExchangeOrderMapper
                         .INSTANCE.SEOrderWrapper2StockExchangeOrder(exchOrder, apiAccount);
                 order.setExecuteTimestamp(null);
                 newExchOrderList.add(order);
@@ -105,8 +105,8 @@ public class MonitorService {
         finishedExchOrderList.addAll(pFinishedExchOrderList);
     }
 
-    private void processNewExchOrders(final StockExchangeApiAccount apiAccount,
-                                      final List<StockExchangeOrder> newExchOrderList) {
+    private void processNewExchOrders(final ApiAccount apiAccount,
+                                      final List<Order> newExchOrderList) {
         // если на бирже есть а в БД нет, то сохранить в БД и послать уведомление в ТГ
         newExchOrderList.forEach(e -> {
             stockExchangeDBOrderList.get(apiAccount).add(stockExchangeOrderService.save(e));
@@ -118,8 +118,8 @@ public class MonitorService {
         });
     }
 
-    private void processFinishedExchOrders(final StockExchangeApiAccount apiAccount,
-                                           final List<StockExchangeOrder> finishedExchOrderList) {
+    private void processFinishedExchOrders(final ApiAccount apiAccount,
+                                           final List<Order> finishedExchOrderList) {
         // если в БД есть а на бирже нет, то запросить по дельте статус и обновить статусы в БД,
         // после чего послать уведомление в ТГ
         finishedExchOrderList.forEach(e -> {
@@ -133,10 +133,10 @@ public class MonitorService {
         });
     }
 
-    private void requestAndUpdateOrder(StockExchangeOrder order, StockExchangeApiAccount apiAccount) {
-        SEOrderWrapper wrapper = apiAccount.getExchClient()// сделать метод запроса в апи аккауне
+    private void requestAndUpdateOrder(Order order, ApiAccount apiAccount) {
+        OrderWrapper wrapper = apiAccount.getExchClient()// сделать метод запроса в апи аккауне
                 .requestOrderDetails(order.getInstrument(), order.getSeOrderId());
-        StockExchangeOrder exchOrder = SEOrderWrapper2StockExchangeOrderMapper
+        Order exchOrder = SEOrderWrapper2StockExchangeOrderMapper
                 .INSTANCE.SEOrderWrapper2StockExchangeOrder(wrapper, order.getStockExchangeApiAccount());
         order.setExecuteTimestamp(exchOrder.getExecuteTimestamp());
         order.setState(exchOrder.getState());

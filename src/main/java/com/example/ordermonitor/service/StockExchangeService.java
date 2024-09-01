@@ -34,7 +34,7 @@ public class StockExchangeService implements IRestService {
 
     public CreateStockExchangeResponse createStockExchange(CreateStockExchangeRequest request) {
         try {
-            StockExchange newStockExchange = dtoMapper.CreateStockExchangeRequest2StockExchange(request);
+            StockExchange newStockExchange = dtoMapper.createStockExchangeRequest2StockExchange(request);
             newStockExchange = saveStockExchange(newStockExchange);
             return dtoMapper.stockExchange2CreateStockExchangeResponse(newStockExchange,
                     RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
@@ -57,7 +57,10 @@ public class StockExchangeService implements IRestService {
 
     public UpdateStockExchangeResponse updateStockExchange(UpdateStockExchangeRequest request) {
         try {
-            return null;
+            StockExchange updatedStockExchange = dtoMapper.updateStockExchangeRequest2StockExchange(request);
+            updatedStockExchange = saveStockExchange(updatedStockExchange);
+            return dtoMapper.stockExchange2UpdateStockExchangeResponse(updatedStockExchange,
+                    RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new UpdateStockExchangeResponse(RESPONSE_CODE_ERROR, e.getMessage());
         }

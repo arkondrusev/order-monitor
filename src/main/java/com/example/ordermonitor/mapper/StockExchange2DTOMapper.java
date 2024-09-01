@@ -2,6 +2,8 @@ package com.example.ordermonitor.mapper;
 
 import com.example.ordermonitor.dto.stockexchange.CreateStockExchangeRequest;
 import com.example.ordermonitor.dto.stockexchange.CreateStockExchangeResponse;
+import com.example.ordermonitor.dto.stockexchange.UpdateStockExchangeRequest;
+import com.example.ordermonitor.dto.stockexchange.UpdateStockExchangeResponse;
 import com.example.ordermonitor.model.StockExchange;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,6 +24,18 @@ public interface StockExchange2DTOMapper {
 
     @Mapping(target = "id", expression = "java(null)")
     @Mapping(target = "name", source = "name")
-    StockExchange CreateStockExchangeRequest2StockExchange(CreateStockExchangeRequest request);
+    StockExchange createStockExchangeRequest2StockExchange(CreateStockExchangeRequest request);
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    StockExchange updateStockExchangeRequest2StockExchange(UpdateStockExchangeRequest request);
+
+    @Mapping(target = "id", source = "stockExchange.id")
+    @Mapping(target = "name", source = "stockExchange.name")
+    @Mapping(target = "responseCode", source = "responseCode")
+    @Mapping(target = "responseMessage", source = "responseMessage")
+    UpdateStockExchangeResponse stockExchange2UpdateStockExchangeResponse(StockExchange stockExchange,
+                                                                          Integer responseCode,
+                                                                          String responseMessage);
 
 }

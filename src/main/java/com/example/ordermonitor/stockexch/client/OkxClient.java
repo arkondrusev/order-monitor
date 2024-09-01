@@ -1,6 +1,7 @@
 package com.example.ordermonitor.stockexch.client;
 
 import com.example.ordermonitor.dto.SEOrderWrapper;
+import com.example.ordermonitor.stockexch.ExchConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +24,8 @@ public class OkxClient extends AbstractExchClient implements ExchClient {
 
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public OkxClient() {
+    public OkxClient(ExchConfig config) {
+        this.config = config;
         restClient = RestClient.create();
     }
 

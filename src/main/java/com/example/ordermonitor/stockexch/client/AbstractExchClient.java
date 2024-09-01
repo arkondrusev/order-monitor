@@ -11,14 +11,6 @@ public abstract class AbstractExchClient implements ExchClient {
     protected RestClient restClient;
     protected ExchConfig config;
 
-    public void setConfig(ExchConfig config) {
-        this.config = config;
-    };
-
-    public ExchConfig getConfig() {
-        return config;
-    };
-
     public abstract List<SEOrderWrapper> requestOrderList();
     public abstract SEOrderWrapper requestOrderDetails(String intrId, String orderId);
 

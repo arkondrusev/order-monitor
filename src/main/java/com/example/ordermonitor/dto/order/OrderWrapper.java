@@ -1,4 +1,4 @@
-package com.example.ordermonitor.dto;
+package com.example.ordermonitor.dto.order;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

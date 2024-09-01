@@ -18,7 +18,7 @@ public class Order {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "se_api_account_id")
-    private ApiAccount stockExchangeApiAccount;
+    private ApiAccount apiAccount;
     @Column(name = "se_order_id")
     private String seOrderId;
     private String type;
@@ -40,7 +40,7 @@ public class Order {
                  String instrument, String tradeSide, BigDecimal quantity, BigDecimal price,
                  ZonedDateTime openTimestamp, ZonedDateTime executeTimestamp, String state) {
         this.id = id;
-        this.stockExchangeApiAccount = apiAccount;
+        this.apiAccount = apiAccount;
         this.seOrderId = seOrderId;
         this.type = type;
         this.instrument = instrument;

@@ -1,6 +1,6 @@
 package com.example.ordermonitor.service;
 
-import com.example.ordermonitor.dto.OrderWrapper;
+import com.example.ordermonitor.dto.order.OrderWrapper;
 import com.example.ordermonitor.mapper.SEOrderWrapper2StockExchangeOrderMapper;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.model.ApiAccount;
@@ -19,7 +19,7 @@ import java.util.*;
 public class MonitorService {
 
     private final StockExchangeService stockExchangeService;
-    private final StockExchangeApiAccountService stockExchangeApiAccountService;
+    private final ApiAccountService stockExchangeApiAccountService;
     private final OrderService stockExchangeOrderService;
     private final TelegramBot telegramBot;
     private final Environment env;
@@ -29,7 +29,7 @@ public class MonitorService {
     private final Map<ApiAccount, List<Order>> stockExchangeDBOrderList = new HashMap<>();
 
     public MonitorService(StockExchangeService stockExchangeService,
-                          StockExchangeApiAccountService stockExchangeApiAccountService,
+                          ApiAccountService stockExchangeApiAccountService,
                           OrderService stockExchangeOrderService,
                           TelegramBot telegramBot,
                           Environment env) {
@@ -137,7 +137,7 @@ public class MonitorService {
         OrderWrapper wrapper = apiAccount.getExchClient()// сделать метод запроса в апи аккауне
                 .requestOrderDetails(order.getInstrument(), order.getSeOrderId());
         Order exchOrder = SEOrderWrapper2StockExchangeOrderMapper
-                .INSTANCE.SEOrderWrapper2StockExchangeOrder(wrapper, order.getStockExchangeApiAccount());
+                .INSTANCE.SEOrderWrapper2StockExchangeOrder(wrapper, order.getApiAccount());
         order.setExecuteTimestamp(exchOrder.getExecuteTimestamp());
         order.setState(exchOrder.getState());
         stockExchangeOrderService.save(order);

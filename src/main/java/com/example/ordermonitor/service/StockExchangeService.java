@@ -1,5 +1,6 @@
 package com.example.ordermonitor.service;
 
+import com.example.ordermonitor.dto.stockexchange.*;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.repository.StockExchangeRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,22 @@ public class StockExchangeService {
 
     public void deleteStockExchange(StockExchange stockExchange) {
         stockExchangeRepository.delete(stockExchange);
+    }
+
+    public CreateStockExchangeResponse createStockExchange(CreateStockExchangeRequest request) {
+        return null;
+    }
+
+    public GetStockExchangeListResponse getStockExchangeListWrapped() {
+        return null;
+    }
+
+    public UpdateStockExchangeResponse updateStockExchange(UpdateStockExchangeRequest request) {
+        return null;
+    }
+
+    public DeleteStockExchangeResponse deleteStockExchange(DeleteStockExchangeRequest request) {
+        return null;
     }
 
 }

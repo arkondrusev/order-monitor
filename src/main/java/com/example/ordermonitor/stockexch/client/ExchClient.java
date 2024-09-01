@@ -1,6 +1,6 @@
 package com.example.ordermonitor.stockexch.client;
 
-import com.example.ordermonitor.dto.OrderWrapper;
+import com.example.ordermonitor.dto.order.OrderWrapper;
 
 import java.util.List;
 

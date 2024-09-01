@@ -1,6 +1,6 @@
 package com.example.ordermonitor.stockexch.client;
 
-import com.example.ordermonitor.dto.OrderWrapper;
+import com.example.ordermonitor.dto.order.OrderWrapper;
 import com.example.ordermonitor.stockexch.ExchConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

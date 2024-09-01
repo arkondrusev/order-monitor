@@ -13,22 +13,22 @@ public class ApiAccountController {
     private final ApiAccountService accountService;
 
     @PostMapping("create")
-    public CreateAccountResponse createAccount(@RequestBody CreateAccountRequest request) {
+    public CreateApiAccountResponse createAccount(@RequestBody CreateApiAccountRequest request) {
         return accountService.createAccount(request);
     }
 
     @GetMapping("get-list")
-    public GetAccountListResponse getAccountList(@RequestBody GetAccountListRequest request) {
+    public GetApiAccountListResponse getAccountList(@RequestBody GetApiAccountListRequest request) {
         return accountService.getAccountList(request);
     }
 
     @PutMapping("update")
-    public UpdateAccountResponse updateAccount(@RequestBody UpdateAccountRequest request) {
+    public UpdateApiAccountResponse updateAccount(@RequestBody UpdateApiAccountRequest request) {
         return accountService.updateAccount(request);
     }
 
     @DeleteMapping("delete")
-    public DeleteAccountResponse deleteAccount(@RequestBody DeleteAccountRequest request) {
+    public DeleteApiAccountResponse deleteAccount(@RequestBody DeleteApiAccountRequest request) {
         return accountService.deleteAccount(request);
     }
 

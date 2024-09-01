@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateAccountRequest {
+public class CreateApiAccountResponse {
 
+    private Integer responseCode;
+    private String responseMessage;
+    private Long accountId;
     private String accountName;
-    private Long StockExchangeId;
+    private Long stockExchangeId;
     private String telegramUsername;
 
 }

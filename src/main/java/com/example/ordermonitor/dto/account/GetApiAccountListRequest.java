@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateAccountResponse {
+public class GetApiAccountListRequest {
 
-    private Integer responseCode;
-    private String responseMessage;
-    private AccountWrapper account;
+    private Long stockExchangeId;
 
 }

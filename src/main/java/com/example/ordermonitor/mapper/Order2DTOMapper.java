@@ -9,10 +9,10 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 
 @Mapper(config = OrderMonitorMapperConfig.class)
-public interface Order2RestOrderWrapperMapper {
+public interface Order2DTOMapper {
 
-    Order2RestOrderWrapperMapper INSTANCE = Mappers
-            .getMapper(Order2RestOrderWrapperMapper.class);
+    Order2DTOMapper INSTANCE = Mappers
+            .getMapper(Order2DTOMapper.class);
 
     @Mapping(target = "orderId", source = "id")
     @Mapping(target = "apiAccountId", source = "order.apiAccount.id")

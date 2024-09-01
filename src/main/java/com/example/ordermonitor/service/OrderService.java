@@ -2,7 +2,7 @@ package com.example.ordermonitor.service;
 
 import com.example.ordermonitor.dto.order.GetOrderListRequest;
 import com.example.ordermonitor.dto.order.GetOrderListResponse;
-import com.example.ordermonitor.mapper.Order2RestOrderWrapperMapper;
+import com.example.ordermonitor.mapper.Order2DTOMapper;
 import com.example.ordermonitor.model.ApiAccount;
 import com.example.ordermonitor.model.Order;
 import com.example.ordermonitor.repository.ApiAccountRepository;
@@ -43,7 +43,7 @@ public class OrderService implements IRestService {
             //todo implement other filters
             List<Order> orderList = orderRepository.findAllByApiAccount(apiAccountOpt.get());
             return new GetOrderListResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK,
-                    Order2RestOrderWrapperMapper.INSTANCE.order2RestOrderWrapper(orderList));
+                    Order2DTOMapper.INSTANCE.order2RestOrderWrapper(orderList));
         } catch (Exception e) {
             return new GetOrderListResponse(RESPONSE_CODE_ERROR, e.getMessage(), null);
         }

@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateAccountRequest {
+public class DeleteApiAccountRequest {
 
-    private Long accountId;
-    private String telegramUsername;
+    private long accountId;
 
 }

@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteAccountResponse {
+public class ApiAccountRestWrapper {
 
-    private Integer responseCode;
-    private String responseMessage;
+    private Long accountId;
+    private String accountName;
+    private Long stockExchangeId;
+    private String telegramUsername;
 
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ApiAccountService {
+public class ApiAccountService implements IRestService {
 
     private final ApiAccountRepository apiAccountRepository;
 
@@ -34,19 +34,19 @@ public class ApiAccountService {
         apiAccountRepository.delete(stockExchangeApiAccount);
     }
 
-    public CreateAccountResponse createAccount(CreateAccountRequest request) {
+    public CreateApiAccountResponse createAccount(CreateApiAccountRequest request) {
         return null;
     }
 
-    public UpdateAccountResponse updateAccount(UpdateAccountRequest request) {
+    public UpdateApiAccountResponse updateAccount(UpdateApiAccountRequest request) {
         return null;
     }
 
-    public GetAccountListResponse getAccountList(GetAccountListRequest request) {
+    public GetApiAccountListResponse getAccountList(GetApiAccountListRequest request) {
         return null;
     }
 
-    public DeleteAccountResponse deleteAccount(DeleteAccountRequest request) {
+    public DeleteApiAccountResponse deleteAccount(DeleteApiAccountRequest request) {
         return null;
     }
 

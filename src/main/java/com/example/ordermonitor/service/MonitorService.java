@@ -7,7 +7,6 @@ import com.example.ordermonitor.model.StockExchangeApiAccount;
 import com.example.ordermonitor.model.StockExchangeOrder;
 import com.example.ordermonitor.stockexch.client.ExchClient;
 import com.example.ordermonitor.telegram.TelegramBot;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -16,8 +15,6 @@ import java.util.*;
 
 @Service
 public class MonitorService {
-
-    private Environment env;
 
     private final StockExchangeService stockExchangeService;
     private final StockExchangeApiAccountService stockExchangeApiAccountService;
@@ -31,13 +28,11 @@ public class MonitorService {
     public MonitorService(StockExchangeService stockExchangeService,
                           StockExchangeApiAccountService stockExchangeApiAccountService,
                           StockExchangeOrderService stockExchangeOrderService,
-                          TelegramBot telegramBot,
-                          Environment env) {
+                          TelegramBot telegramBot) {
         this.stockExchangeService = stockExchangeService;
         this.stockExchangeApiAccountService = stockExchangeApiAccountService;
         this.stockExchangeOrderService = stockExchangeOrderService;
         this.telegramBot = telegramBot;
-        this.env = env;
 
         initData();
     }
@@ -62,20 +57,18 @@ public class MonitorService {
     }
 
     private void checkExchangesOrders() {
-        stockExchangeList.forEach(se -> {
-                stockExchangeApiAccountList.get(se).forEach(acc -> {
-                    ExchClient exchClient = se.getExchClient();
-                    exchClient.setConfig(acc.getExchConfig());
+        stockExchangeList.forEach(se -> stockExchangeApiAccountList.get(se).forEach(acc -> {
+            ExchClient exchClient = se.getExchClient();
+            exchClient.setConfig(acc.getExchConfig());
 
-                    List<SEOrderWrapper> exchOrderList = exchClient.requestOrderList();
-                    List<StockExchangeOrder> newExchOrderList = new ArrayList<>();
-                    List<StockExchangeOrder> finishedExchOrderList = new ArrayList<>();
-                    findNewAndFinishedOrders(acc, exchOrderList, newExchOrderList, finishedExchOrderList);
+            List<SEOrderWrapper> exchOrderList = exchClient.requestOrderList();
+            List<StockExchangeOrder> newExchOrderList = new ArrayList<>();
+            List<StockExchangeOrder> finishedExchOrderList = new ArrayList<>();
+            findNewAndFinishedOrders(acc, exchOrderList, newExchOrderList, finishedExchOrderList);
 
-                    processNewExchOrders(acc, newExchOrderList);
-                    processFinishedExchOrders(acc, finishedExchOrderList);
-                });
-        });
+            processNewExchOrders(acc, newExchOrderList);
+            processFinishedExchOrders(acc, finishedExchOrderList);
+        }));
     }
 
     private static void findNewAndFinishedOrders(final StockExchangeApiAccount apiAccount,
@@ -97,7 +90,7 @@ public class MonitorService {
             }
         });
 
-        pFinishedExchOrderList.forEach(e->finishedExchOrderList.add(e));
+        finishedExchOrderList.addAll(pFinishedExchOrderList);
     }
 
     private void processNewExchOrders(final StockExchangeApiAccount apiAccount,

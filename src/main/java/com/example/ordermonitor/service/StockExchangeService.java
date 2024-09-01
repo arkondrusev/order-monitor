@@ -1,6 +1,7 @@
 package com.example.ordermonitor.service;
 
 import com.example.ordermonitor.dto.stockexchange.*;
+import com.example.ordermonitor.mapper.StockExchange2StockExchangeRestWrapperMapper;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.repository.StockExchangeRepository;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class StockExchangeService {
     }
 
     public GetStockExchangeListResponse getStockExchangeListWrapped() {
-        return null;
+        return new GetStockExchangeListResponse(StockExchange2StockExchangeRestWrapperMapper
+                .INSTANCE.stockExchange2StockExchangeRestWrapper(stockExchangeRepository.findAll()));
     }
 
     public UpdateStockExchangeResponse updateStockExchange(UpdateStockExchangeRequest request) {

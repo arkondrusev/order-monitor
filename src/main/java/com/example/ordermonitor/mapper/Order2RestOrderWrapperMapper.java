@@ -2,11 +2,13 @@ package com.example.ordermonitor.mapper;
 
 import com.example.ordermonitor.dto.order.OrderRestWrapper;
 import com.example.ordermonitor.model.Order;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
+@Mapper(config = OrderMonitorMapperConfig.class)
 public interface Order2RestOrderWrapperMapper {
 
     Order2RestOrderWrapperMapper INSTANCE = Mappers

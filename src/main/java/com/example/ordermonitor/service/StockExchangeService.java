@@ -7,6 +7,7 @@ import com.example.ordermonitor.repository.StockExchangeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StockExchangeService implements IRestService {
@@ -33,12 +34,19 @@ public class StockExchangeService implements IRestService {
 
     public CreateStockExchangeResponse createStockExchange(CreateStockExchangeRequest request) {
         try {
+            checkCreateStockExchangeParams(request);
             StockExchange newStockExchange = dtoMapper.createStockExchangeRequest2StockExchange(request);
             newStockExchange = saveStockExchange(newStockExchange);
             return dtoMapper.stockExchange2CreateStockExchangeResponse(newStockExchange,
                     RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new CreateStockExchangeResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
+    }
+
+    public void checkCreateStockExchangeParams(CreateStockExchangeRequest request) {
+        if (request.getName() == null || request.getName().isEmpty()) {
+            throw new IllegalArgumentException("Name is required");
         }
     }
 
@@ -55,6 +63,7 @@ public class StockExchangeService implements IRestService {
 
     public UpdateStockExchangeResponse updateStockExchange(UpdateStockExchangeRequest request) {
         try {
+            checkUpdateStockExchangeParams(request);
             StockExchange updatedStockExchange = dtoMapper.updateStockExchangeRequest2StockExchange(request);
             updatedStockExchange = saveStockExchange(updatedStockExchange);
             return dtoMapper.stockExchange2UpdateStockExchangeResponse(updatedStockExchange,
@@ -64,11 +73,32 @@ public class StockExchangeService implements IRestService {
         }
     }
 
+    private void checkUpdateStockExchangeParams(UpdateStockExchangeRequest request) {
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("Id is required");
+        }
+        if (request.getName() == null || request.getName().isEmpty()) {
+            throw new IllegalArgumentException("Name is required");
+        }
+    }
+
     public DeleteStockExchangeResponse deleteStockExchange(DeleteStockExchangeRequest request) {
         try {
-            return null;
+            checkDeleteStockExchangeParams(request);
+            Optional<StockExchange> stockExchangeOpt = stockExchangeRepository.findById(request.getId());
+            if (stockExchangeOpt.isEmpty()) {
+                throw new IllegalArgumentException("Stock exchange not found");
+            }
+            stockExchangeRepository.delete(stockExchangeOpt.get());
+            return new DeleteStockExchangeResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new DeleteStockExchangeResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
+    }
+
+    private void checkDeleteStockExchangeParams(DeleteStockExchangeRequest request) {
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("Id is required");
         }
     }
 

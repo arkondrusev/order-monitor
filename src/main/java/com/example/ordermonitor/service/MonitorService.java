@@ -111,11 +111,29 @@ public class MonitorService {
         newExchOrderList.forEach(e -> {
             stockExchangeDBOrderList.get(apiAccount).add(stockExchangeOrderService.save(e));
             try {
-                telegramBot.sendMessage("376653873", "OKX new order");
+                telegramBot.sendMessage("376653873", getNotificationMessage(e, false));
             } catch (TelegramApiException ex) {
                 System.out.println(ex);
             }
         });
+    }
+
+    private String getNotificationMessage(Order order, boolean isClosed) {
+        StringBuilder sb = new StringBuilder();
+        if (!isClosed) {
+            sb.append("Order placed:\n");
+        } else {
+            sb.append("Order finished:\n");
+        }
+        sb.append("exchange: ").append(order.getApiAccount().getStockExchange().getName())
+                .append(" order №: ").append(order.getSeOrderId()).append(" status: ").append(order.getState())
+                .append("\n").append(order.getInstrument()).append(" ").append(order.getTradeSide())
+                .append(" qty: ").append(order.getQuantity()).append(" price: ").append(order.getPrice()).append("\n")
+                .append("placed: ").append(order.getOpenTimestamp());
+        if (isClosed) {
+            sb.append("\nclosed: ").append(order.getExecuteTimestamp());
+        }
+        return sb.toString();
     }
 
     private void processFinishedExchOrders(final ApiAccount apiAccount,
@@ -126,7 +144,7 @@ public class MonitorService {
             requestAndUpdateOrder(e, apiAccount);
             stockExchangeDBOrderList.get(apiAccount).remove(e);
             try {
-                telegramBot.sendMessage("376653873", "OKX finished order");
+                telegramBot.sendMessage("376653873", getNotificationMessage(e, true));
             } catch (Exception ex) {
                 System.out.println(ex);
             }

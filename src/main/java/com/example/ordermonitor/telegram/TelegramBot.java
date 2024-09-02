@@ -41,7 +41,7 @@ public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
     }
 
     @PostConstruct
-    public void init() {
+    private void init() {
         System.out.println("Initializing TelegramBot");
         try {
             TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication();

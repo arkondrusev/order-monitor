@@ -86,9 +86,23 @@ public class ApiAccountService implements IRestService {
 
     public GetApiAccountListResponse getAccountList(GetApiAccountListRequest request) {
         try {
-            return null;
+            checkGetAccountListParams(request);
+            Optional<StockExchange> stockExchangeOpt = stockExchangeRepository.findById(request.getStockExchangeId());
+            if (stockExchangeOpt.isEmpty()) {
+                throw new IllegalArgumentException("Stock exchange not found");
+            }
+            List<ApiAccount> apiAccountList = apiAccountRepository.findAllByStockExchange(stockExchangeOpt.get());
+            List<ApiAccountRestWrapper> apiAccountWrapperList = dtoMapper
+                    .apiAccount2ApiAccountRestWrapper(apiAccountList);
+            return new GetApiAccountListResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK, apiAccountWrapperList);
         } catch (Exception e) {
             return new GetApiAccountListResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
+    }
+
+    private void checkGetAccountListParams(GetApiAccountListRequest request) {
+        if (request.getStockExchangeId() == null) {
+            throw new IllegalArgumentException("Stock exchange id is required");
         }
     }
 

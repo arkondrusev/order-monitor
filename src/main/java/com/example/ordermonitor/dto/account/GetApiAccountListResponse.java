@@ -14,7 +14,7 @@ public class GetApiAccountListResponse {
 
     private Integer responseCode;
     private String responseMessage;
-    private List<ApiAccount> accountList;
+    private List<ApiAccountRestWrapper> accountList;
 
     public GetApiAccountListResponse(Integer responseCode, String responseMessage) {
         this.responseCode = responseCode;

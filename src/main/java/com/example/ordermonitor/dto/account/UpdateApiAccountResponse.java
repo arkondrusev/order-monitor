@@ -13,4 +13,10 @@ public class UpdateApiAccountResponse {
     private String responseMessage;
     private ApiAccountRestWrapper account;
 
+    public UpdateApiAccountResponse(Integer responseCode, String responseMessage) {
+        this.responseCode = responseCode;
+        this.responseMessage = responseMessage;
+        this.account = null;
+    }
+
 }

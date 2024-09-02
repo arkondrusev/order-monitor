@@ -35,19 +35,35 @@ public class ApiAccountService implements IRestService {
     }
 
     public CreateApiAccountResponse createAccount(CreateApiAccountRequest request) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            return new CreateApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
     public UpdateApiAccountResponse updateAccount(UpdateApiAccountRequest request) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            return new UpdateApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
     public GetApiAccountListResponse getAccountList(GetApiAccountListRequest request) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            return new GetApiAccountListResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
     public DeleteApiAccountResponse deleteAccount(DeleteApiAccountRequest request) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            return new DeleteApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
     }
 
 }

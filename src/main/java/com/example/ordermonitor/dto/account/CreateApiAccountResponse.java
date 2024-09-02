@@ -16,4 +16,13 @@ public class CreateApiAccountResponse {
     private Long stockExchangeId;
     private String telegramUsername;
 
+    public CreateApiAccountResponse(Integer responseCode, String responseMessage) {
+        this.responseCode = responseCode;
+        this.responseMessage = responseMessage;
+        this.accountId = null;
+        this.accountName = null;
+        this.stockExchangeId = null;
+        this.telegramUsername = null;
+    }
+
 }

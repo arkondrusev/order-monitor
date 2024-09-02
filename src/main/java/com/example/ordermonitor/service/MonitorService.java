@@ -50,7 +50,7 @@ public class MonitorService {
     }
 
     private void initStockExchangeData(StockExchange se) {
-        List<ApiAccount> seApiAccountList = stockExchangeApiAccountService.getStockExchangeApiAccount(se);
+        List<ApiAccount> seApiAccountList = stockExchangeApiAccountService.getStockExchangeApiAccountList(se);
         stockExchangeApiAccountList.put(se, seApiAccountList);
         seApiAccountList.forEach(acc -> {
             // load api config

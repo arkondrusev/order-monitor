@@ -12,6 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 public class GetApiAccountListResponse {
 
+    private Integer responseCode;
+    private String responseMessage;
     private List<ApiAccount> accountList;
+
+    public GetApiAccountListResponse(Integer responseCode, String responseMessage) {
+        this.responseCode = responseCode;
+        this.responseMessage = responseMessage;
+        this.accountList = null;
+    }
 
 }

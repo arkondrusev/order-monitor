@@ -46,7 +46,7 @@ public class ApiAccountService implements IRestService {
                 throw new IllegalArgumentException("StockExchange not found");
             }
             ApiAccount newApiAccount = dtoMapper.createApiAccountRequest2ApiAccount(request, stockExchangeOpt.get());
-            newApiAccount = apiAccountRepository.save(newApiAccount);
+            newApiAccount = saveStockExchangeApiAccount(newApiAccount);
             return dtoMapper.apiAccount2CreateApiAccountResponse(newApiAccount, RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new CreateApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
@@ -71,6 +71,7 @@ public class ApiAccountService implements IRestService {
             }
             ApiAccount apiAccount = apiAccountOpt.get();
             apiAccount.setTelegramUsername(request.getTelegramUsername());
+            apiAccount = saveStockExchangeApiAccount(apiAccount);
             return dtoMapper.apiAccount2UpdateApiAccountResponse(dtoMapper
                     .apiAccount2ApiAccountRestWrapper(apiAccount), RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
@@ -108,9 +109,21 @@ public class ApiAccountService implements IRestService {
 
     public DeleteApiAccountResponse deleteAccount(DeleteApiAccountRequest request) {
         try {
-            return null;
+            checkDeleteApiAccountParams(request);
+            Optional<ApiAccount> apiAccountOpt = apiAccountRepository.findById(request.getAccountId());
+            if (apiAccountOpt.isEmpty()) {
+                throw new IllegalArgumentException("Api account not found");
+            }
+            deleteStockExchangeApiAccount(apiAccountOpt.get());
+            return new DeleteApiAccountResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new DeleteApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
+    }
+
+    private void checkDeleteApiAccountParams(DeleteApiAccountRequest request) {
+        if (request.getAccountId() == null) {
+            throw new IllegalArgumentException("Account id is required");
         }
     }
 

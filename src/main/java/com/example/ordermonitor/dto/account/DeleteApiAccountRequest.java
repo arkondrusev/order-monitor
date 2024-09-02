@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeleteApiAccountRequest {
 
-    private long accountId;
+    private Long accountId;
 
 }

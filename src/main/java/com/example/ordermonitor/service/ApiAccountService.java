@@ -55,18 +55,32 @@ public class ApiAccountService implements IRestService {
 
     private void checkCreateApiAccountParams(CreateApiAccountRequest request) {
         if (request.getAccountName() == null) {
-            throw new IllegalArgumentException("AccountName is required");
+            throw new IllegalArgumentException("Account name is required");
         }
         if (request.getStockExchangeId() == null) {
-            throw new IllegalArgumentException("StockExchangeId is required");
+            throw new IllegalArgumentException("Stock exchange id is required");
         }
     }
 
     public UpdateApiAccountResponse updateAccount(UpdateApiAccountRequest request) {
         try {
-            return null;
+            checkUpdateApiAccountParams(request);
+            Optional<ApiAccount> apiAccountOpt = apiAccountRepository.findById(request.getAccountId());
+            if (apiAccountOpt.isEmpty()) {
+                throw new IllegalArgumentException("Api account not found");
+            }
+            ApiAccount apiAccount = apiAccountOpt.get();
+            apiAccount.setTelegramUsername(request.getTelegramUsername());
+            return dtoMapper.apiAccount2UpdateApiAccountResponse(dtoMapper
+                    .apiAccount2ApiAccountRestWrapper(apiAccount), RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new UpdateApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
+    }
+
+    private void checkUpdateApiAccountParams(UpdateApiAccountRequest request) {
+        if (request.getAccountId() == null) {
+            throw new IllegalArgumentException("Account id is required");
         }
     }
 

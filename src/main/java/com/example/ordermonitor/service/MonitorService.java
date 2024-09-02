@@ -19,7 +19,7 @@ import java.util.*;
 public class MonitorService {
 
     private final StockExchangeService stockExchangeService;
-    private final ApiAccountService stockExchangeApiAccountService;
+    private final ApiAccountService apiAccountService;
     private final OrderService stockExchangeOrderService;
     private final TelegramBot telegramBot;
     private final Environment env;
@@ -29,12 +29,12 @@ public class MonitorService {
     private final Map<ApiAccount, List<Order>> stockExchangeDBOrderList = new HashMap<>();
 
     public MonitorService(StockExchangeService stockExchangeService,
-                          ApiAccountService stockExchangeApiAccountService,
+                          ApiAccountService apiAccountService,
                           OrderService stockExchangeOrderService,
                           TelegramBot telegramBot,
                           Environment env) {
         this.stockExchangeService = stockExchangeService;
-        this.stockExchangeApiAccountService = stockExchangeApiAccountService;
+        this.apiAccountService = apiAccountService;
         this.stockExchangeOrderService = stockExchangeOrderService;
         this.telegramBot = telegramBot;
         this.env = env;
@@ -50,7 +50,7 @@ public class MonitorService {
     }
 
     private void initStockExchangeData(StockExchange se) {
-        List<ApiAccount> seApiAccountList = stockExchangeApiAccountService.getStockExchangeApiAccountList(se);
+        List<ApiAccount> seApiAccountList = apiAccountService.getApiAccountList(se);
         stockExchangeApiAccountList.put(se, seApiAccountList);
         seApiAccountList.forEach(acc -> {
             // load api config

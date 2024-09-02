@@ -1,24 +1,28 @@
 package com.example.ordermonitor.service;
 
 import com.example.ordermonitor.dto.account.*;
+import com.example.ordermonitor.mapper.ApiAccount2DTOMapper;
 import com.example.ordermonitor.model.ApiAccount;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.repository.ApiAccountRepository;
+import com.example.ordermonitor.repository.StockExchangeRepository;
 import jakarta.annotation.Nullable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ApiAccountService implements IRestService {
 
     private final ApiAccountRepository apiAccountRepository;
+    private final StockExchangeRepository stockExchangeRepository;
 
-    public ApiAccountService(ApiAccountRepository apiAccountRepository) {
-        this.apiAccountRepository = apiAccountRepository;
-    }
+    private final ApiAccount2DTOMapper dtoMapper = ApiAccount2DTOMapper.INSTANCE;
 
-    public List<ApiAccount> getStockExchangeApiAccount(@Nullable StockExchange stockExchange) {
+    public List<ApiAccount> getApiAccountList(@Nullable StockExchange stockExchange) {
         if (stockExchange == null) {
             return apiAccountRepository.findAll();
         } else {
@@ -36,9 +40,25 @@ public class ApiAccountService implements IRestService {
 
     public CreateApiAccountResponse createAccount(CreateApiAccountRequest request) {
         try {
-            return null;
+            checkCreateApiAccountParams(request);
+            Optional<StockExchange> stockExchangeOpt = stockExchangeRepository.findById(request.getStockExchangeId());
+            if (stockExchangeOpt.isEmpty()) {
+                throw new IllegalArgumentException("StockExchange not found");
+            }
+            ApiAccount newApiAccount = dtoMapper.createApiAccountRequest2ApiAccount(request, stockExchangeOpt.get());
+            newApiAccount = apiAccountRepository.save(newApiAccount);
+            return dtoMapper.apiAccount2CreateApiAccountResponse(newApiAccount, RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new CreateApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
+    }
+
+    private void checkCreateApiAccountParams(CreateApiAccountRequest request) {
+        if (request.getAccountName() == null) {
+            throw new IllegalArgumentException("AccountName is required");
+        }
+        if (request.getStockExchangeId() == null) {
+            throw new IllegalArgumentException("StockExchangeId is required");
         }
     }
 

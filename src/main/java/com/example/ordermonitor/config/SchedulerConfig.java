@@ -28,8 +28,6 @@ public class SchedulerConfig implements SchedulingConfigurer {
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(taskExecutor());
-//        taskRegistrar.addFixedDelayTask(monitorService::scheduleCheckOrders,
-//                Duration.ofMillis(monitorService.getOrderCheckSchedulerDelay()));
         taskRegistrar.addTriggerTask(
                 monitorService::checkExchangesOrders,
                 context -> {
@@ -38,8 +36,6 @@ public class SchedulerConfig implements SchedulingConfigurer {
                     return lastCompletion.orElseGet(Instant::now).plusMillis(delay);
                 }
         );
-
-
     }
 
 }

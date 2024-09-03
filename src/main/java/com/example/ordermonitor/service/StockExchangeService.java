@@ -4,21 +4,19 @@ import com.example.ordermonitor.dto.stockexchange.*;
 import com.example.ordermonitor.mapper.StockExchange2DTOMapper;
 import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.repository.StockExchangeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class StockExchangeService implements IRestService {
 
     private final StockExchangeRepository stockExchangeRepository;
 
     private final StockExchange2DTOMapper dtoMapper = StockExchange2DTOMapper.INSTANCE;
-
-    public StockExchangeService(StockExchangeRepository stockExchangeRepository) {
-        this.stockExchangeRepository = stockExchangeRepository;
-    }
 
     public List<StockExchange> getStockExchangeList() {
         return stockExchangeRepository.findAll();
@@ -100,10 +98,6 @@ public class StockExchangeService implements IRestService {
         if (request.getId() == null) {
             throw new IllegalArgumentException("Id is required");
         }
-    }
-
-    public SetOrderCheckPeriodResponse setOrderCheckPeriod(SetOrderCheckPeriodRequest request) {
-        return null;
     }
 
 }

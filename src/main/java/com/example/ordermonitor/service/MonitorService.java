@@ -1,5 +1,8 @@
 package com.example.ordermonitor.service;
 
+import com.example.ordermonitor.dto.monitor.GetOrderCheckPeriodResponse;
+import com.example.ordermonitor.dto.monitor.SetOrderCheckPeriodRequest;
+import com.example.ordermonitor.dto.monitor.SetOrderCheckPeriodResponse;
 import com.example.ordermonitor.dto.order.ExchOrderWrapper;
 import com.example.ordermonitor.mapper.ExchOrderWrapper2OrderMapper;
 import com.example.ordermonitor.model.ApiAccount;
@@ -16,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
-public class MonitorService {
+public class MonitorService implements IRestService {
 
     private final StockExchangeService stockExchangeService;
     private final ApiAccountService apiAccountService;
@@ -160,6 +163,31 @@ public class MonitorService {
         order.setExecuteTimestamp(exchOrder.getExecuteTimestamp());
         order.setState(exchOrder.getState());
         stockExchangeOrderService.save(order);
+    }
+
+    public SetOrderCheckPeriodResponse setOrderCheckPeriod(SetOrderCheckPeriodRequest request) {
+        try {
+            checkSetOrderCheckPeriod(request);
+            orderCheckSchedulerDelay.set(request.getOrderCheckPeriodMillis());
+            return new SetOrderCheckPeriodResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
+        } catch (Exception e) {
+            return new SetOrderCheckPeriodResponse(RESPONSE_CODE_ERROR, e.getMessage());
+        }
+    }
+
+    private void checkSetOrderCheckPeriod(SetOrderCheckPeriodRequest request) {
+        if (request.getOrderCheckPeriodMillis() == null) {
+            throw new IllegalArgumentException("OrderCheckPeriodMillis is required");
+        }
+    }
+
+    public GetOrderCheckPeriodResponse getOrderCheckPeriod() {
+        try {
+            return new GetOrderCheckPeriodResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK,
+                    orderCheckSchedulerDelay.get());
+        } catch (Exception e) {
+            return new GetOrderCheckPeriodResponse(RESPONSE_CODE_ERROR, e.getMessage(), null);
+        }
     }
 
 }

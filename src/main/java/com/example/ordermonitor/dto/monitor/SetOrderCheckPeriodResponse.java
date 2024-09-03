@@ -1,4 +1,4 @@
-package com.example.ordermonitor.dto.stockexchange;
+package com.example.ordermonitor.dto.monitor;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

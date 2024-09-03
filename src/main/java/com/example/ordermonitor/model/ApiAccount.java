@@ -25,9 +25,10 @@ public class ApiAccount {
     @ManyToOne
     @JoinColumn(name = "se_id")
     private StockExchange stockExchange;
-    @NonNull
     @Column(name = "tg_username")
     private String telegramUsername;
+    @Column(name = "tg_chat_id")
+    private String telegramChatId;
     @Transient
     private ExchClient exchClient;
 

@@ -22,19 +22,19 @@ public class ApiAccountService implements IRestService {
 
     private final ApiAccount2DTOMapper dtoMapper = ApiAccount2DTOMapper.INSTANCE;
 
-    public List<ApiAccount> getApiAccountList(@Nullable StockExchange stockExchange) {
-        if (stockExchange == null) {
-            return apiAccountRepository.findAll();
-        } else {
-            return apiAccountRepository.findAllByStockExchange(stockExchange);
-        }
+    public List<ApiAccount> getApiAccountList() {
+        return apiAccountRepository.findAll();
     }
 
-    public ApiAccount saveStockExchangeApiAccount(ApiAccount stockExchangeApiAccount) {
+    public List<ApiAccount> getApiAccountList(@Nullable StockExchange stockExchange) {
+        return apiAccountRepository.findAllByStockExchange(stockExchange);
+    }
+
+    public ApiAccount saveApiAccount(ApiAccount stockExchangeApiAccount) {
         return apiAccountRepository.save(stockExchangeApiAccount);
     }
 
-    public void deleteStockExchangeApiAccount(ApiAccount stockExchangeApiAccount) {
+    public void deleteStockExchange(ApiAccount stockExchangeApiAccount) {
         apiAccountRepository.delete(stockExchangeApiAccount);
     }
 
@@ -46,7 +46,7 @@ public class ApiAccountService implements IRestService {
                 throw new IllegalArgumentException("StockExchange not found");
             }
             ApiAccount newApiAccount = dtoMapper.createApiAccountRequest2ApiAccount(request, stockExchangeOpt.get());
-            newApiAccount = saveStockExchangeApiAccount(newApiAccount);
+            newApiAccount = saveApiAccount(newApiAccount);
             return dtoMapper.apiAccount2CreateApiAccountResponse(newApiAccount, RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new CreateApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());
@@ -71,7 +71,7 @@ public class ApiAccountService implements IRestService {
             }
             ApiAccount apiAccount = apiAccountOpt.get();
             apiAccount.setTelegramUsername(request.getTelegramUsername());
-            apiAccount = saveStockExchangeApiAccount(apiAccount);
+            apiAccount = saveApiAccount(apiAccount);
             return dtoMapper.apiAccount2UpdateApiAccountResponse(dtoMapper
                     .apiAccount2ApiAccountRestWrapper(apiAccount), RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class ApiAccountService implements IRestService {
             if (apiAccountOpt.isEmpty()) {
                 throw new IllegalArgumentException("Api account not found");
             }
-            deleteStockExchangeApiAccount(apiAccountOpt.get());
+            deleteStockExchange(apiAccountOpt.get());
             return new DeleteApiAccountResponse(RESPONSE_CODE_OK, RESPONSE_MESSAGE_OK);
         } catch (Exception e) {
             return new DeleteApiAccountResponse(RESPONSE_CODE_ERROR, e.getMessage());

@@ -13,7 +13,6 @@ import com.example.ordermonitor.stockexch.client.OkxClient;
 import com.example.ordermonitor.telegram.TelegramBot;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +27,7 @@ public class MonitorService implements IRestService {
     private final Environment env;
 
     private final List<StockExchange> stockExchangeList = new ArrayList<>();
-    private final Map<StockExchange, List<ApiAccount>> stockExchangeApiAccountList = new HashMap<>();
+    private final Map<StockExchange, List<ApiAccount>> apiAccountList = new HashMap<>();
     private final Map<ApiAccount, List<Order>> stockExchangeDBOrderList = new HashMap<>();
 
     private AtomicInteger orderCheckSchedulerDelay = new AtomicInteger(10000);
@@ -56,7 +55,7 @@ public class MonitorService implements IRestService {
 
     private void initStockExchangeData(StockExchange se) {
         List<ApiAccount> seApiAccountList = apiAccountService.getApiAccountList(se);
-        stockExchangeApiAccountList.put(se, seApiAccountList);
+        apiAccountList.put(se, seApiAccountList);
         seApiAccountList.forEach(acc -> {
             // load api config
             // rework later for flexible initialization
@@ -76,7 +75,8 @@ public class MonitorService implements IRestService {
     }
 
     public void checkExchangesOrders() {
-        stockExchangeList.forEach(se -> stockExchangeApiAccountList.get(se).forEach(acc -> {
+        stockExchangeList.forEach(se -> apiAccountList.get(se).stream()
+                .filter(acc -> acc.getTelegramChatId() != null).forEach(acc -> {
             List<ExchOrderWrapper> exchOrderList = acc.getExchClient().requestOrderList();
             List<Order> newExchOrderList = new ArrayList<>();
             List<Order> finishedExchOrderList = new ArrayList<>();
@@ -114,11 +114,7 @@ public class MonitorService implements IRestService {
         // если на бирже есть а в БД нет, то сохранить в БД и послать уведомление в ТГ
         newExchOrderList.forEach(e -> {
             stockExchangeDBOrderList.get(apiAccount).add(stockExchangeOrderService.save(e));
-            try {
-                telegramBot.sendMessage("376653873", getNotificationMessage(e, false));
-            } catch (TelegramApiException ex) {
-                System.out.println(ex);
-            }
+            telegramBot.sendMessage(apiAccount.getTelegramChatId(), getNotificationMessage(e, false));
         });
     }
 
@@ -148,7 +144,7 @@ public class MonitorService implements IRestService {
             requestAndUpdateOrder(e, apiAccount);
             stockExchangeDBOrderList.get(apiAccount).remove(e);
             try {
-                telegramBot.sendMessage("376653873", getNotificationMessage(e, true));
+                telegramBot.sendMessage(apiAccount.getTelegramChatId(), getNotificationMessage(e, true));
             } catch (Exception ex) {
                 System.out.println(ex);
             }

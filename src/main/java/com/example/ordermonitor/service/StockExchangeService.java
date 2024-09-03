@@ -102,4 +102,8 @@ public class StockExchangeService implements IRestService {
         }
     }
 
+    public SetOrderCheckPeriodResponse setOrderCheckPeriod(SetOrderCheckPeriodRequest request) {
+        return null;
+    }
+
 }

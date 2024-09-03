@@ -32,4 +32,9 @@ public class StockExchangeController {
         return stockExchangeService.deleteStockExchange(request);
     }
 
+    @PutMapping
+    public SetOrderCheckPeriodResponse setOrderCheckPeriod(@RequestBody SetOrderCheckPeriodRequest request) {
+        return stockExchangeService.setOrderCheckPeriod(request);
+    }
+
 }

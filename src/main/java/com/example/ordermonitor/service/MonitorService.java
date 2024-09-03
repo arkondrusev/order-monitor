@@ -2,18 +2,18 @@ package com.example.ordermonitor.service;
 
 import com.example.ordermonitor.dto.order.ExchOrderWrapper;
 import com.example.ordermonitor.mapper.ExchOrderWrapper2OrderMapper;
-import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.model.ApiAccount;
 import com.example.ordermonitor.model.Order;
+import com.example.ordermonitor.model.StockExchange;
 import com.example.ordermonitor.stockexch.ExchConfig;
 import com.example.ordermonitor.stockexch.client.OkxClient;
 import com.example.ordermonitor.telegram.TelegramBot;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class MonitorService {
@@ -27,6 +27,8 @@ public class MonitorService {
     private final List<StockExchange> stockExchangeList = new ArrayList<>();
     private final Map<StockExchange, List<ApiAccount>> stockExchangeApiAccountList = new HashMap<>();
     private final Map<ApiAccount, List<Order>> stockExchangeDBOrderList = new HashMap<>();
+
+    private AtomicInteger orderCheckSchedulerDelay = new AtomicInteger(10000);
 
     public MonitorService(StockExchangeService stockExchangeService,
                           ApiAccountService apiAccountService,
@@ -66,12 +68,11 @@ public class MonitorService {
         });
     }
 
-    @Scheduled(fixedDelay = 10000)
-    public void scheduleCheckOrders() {
-        checkExchangesOrders();
+    public AtomicInteger getOrderCheckSchedulerDelay() {
+        return orderCheckSchedulerDelay;
     }
 
-    private void checkExchangesOrders() {
+    public void checkExchangesOrders() {
         stockExchangeList.forEach(se -> stockExchangeApiAccountList.get(se).forEach(acc -> {
             List<ExchOrderWrapper> exchOrderList = acc.getExchClient().requestOrderList();
             List<Order> newExchOrderList = new ArrayList<>();
